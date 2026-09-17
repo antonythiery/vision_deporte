@@ -27,6 +27,7 @@ printedBoard = aruco.CharucoBoard(
     30.8,
     aruco_dict_6
 )
+charuco3D = printedBoard.getChessboardCorners()
 
 # cam resolution max 3840 x 2160
 
@@ -42,6 +43,8 @@ images = [
 
 all_charuco_corners = []
 all_charucos_ids = []
+all_object_points = []
+all_image_points = []
 
 image_size = None
 
@@ -50,12 +53,29 @@ for k in range(len(images)):
     if(image is None):
         continue
 
-    print(f"image size = {image.shape}")
-
+    image_size = (image.shape[1], image.shape[0])
     charucoDetected = detector.detectBoard(image)
+    charucos_corners = charucoDetected[0]
+    charucos_ids = charucoDetected[1]
 
-    if charucoDetected[0] is None or len(charucoDetected[0]) < 4:
+    if charucos_corners is None or len(charucos_corners) < 4:
         continue
 
-    all_charuco_corners.append(charucoDetected[0])
-    all_charucos_ids.append(charucoDetected[1])
+    object_points = charuco3D[charucos_ids]
+    image_points = charucos_corners
+
+    all_charuco_corners.append(charucos_corners)
+    all_charucos_ids.append(charucos_ids)
+    all_object_points.append(object_points)
+    all_image_points.append(image_points)
+
+
+RMS, cameraMatrix, distCoeffs, rvecs, tvecs = cv2.calibrateCamera(
+    all_object_points, 
+    all_image_points, 
+    image_size,
+    None,
+    None
+)
+
+print(f"RMS : {RMS} \n cameraMatrix : \n{cameraMatrix} \n distCoeffs : {distCoeffs}")
