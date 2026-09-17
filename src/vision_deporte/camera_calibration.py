@@ -10,7 +10,7 @@ import os
 aruco_dict_6 = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
 
 def create_charuco_board():
-    workdir = "./workdir/"
+    workdir = "./datas/charuco/"
     board = aruco.CharucoBoard((7, 5), 1, .8, aruco_dict_6)
     imboard = board.generateImage((2000, 2000))
     cv2.imwrite(workdir + "chessboard.tiff", imboard)
@@ -19,7 +19,7 @@ def create_charuco_board():
     plt.imshow(imboard, cmap = mpl.cm.gray, interpolation = "nearest")
     ax.axis("off")
     plt.imshow(imboard, cmap="gray")
-    plt.savefig("workdir/chessboard.png")
+    plt.savefig("datas/charuco/chessboard.png")
 
 printedBoard = aruco.CharucoBoard(
     (7, 5),
@@ -33,7 +33,7 @@ charuco3D = printedBoard.getChessboardCorners()
 
 detector = aruco.CharucoDetector(printedBoard)
 
-image_dir = "calibration_images"
+image_dir = "datas/calibration_images"
 
 images = [
     os.path.join(image_dir, f)
@@ -79,3 +79,5 @@ RMS, cameraMatrix, distCoeffs, rvecs, tvecs = cv2.calibrateCamera(
 )
 
 print(f"RMS : {RMS} \n cameraMatrix : \n{cameraMatrix} \n distCoeffs : {distCoeffs}")
+
+np.savez("src/vision_deporte/cameraParams", RMS=RMS, cameraMatrix=cameraMatrix, distCoeffs=distCoeffs)

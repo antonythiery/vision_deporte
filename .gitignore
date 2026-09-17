@@ -9,7 +9,4 @@ wheels/
 # Virtual environments
 .venv
 
-images/
-videos/
-workdir/
-calibration_images/
+datas/
