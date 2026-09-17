@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import pandas as pd
-# %matplotlib nbagg
+import os
 
 aruco_dict_6 = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
 
@@ -31,3 +31,31 @@ printedBoard = aruco.CharucoBoard(
 # cam resolution max 3840 x 2160
 
 detector = aruco.CharucoDetector(printedBoard)
+
+image_dir = "calibration_images"
+
+images = [
+    os.path.join(image_dir, f)
+    for f in os.listdir(image_dir)
+    if f.endswith(".png") or f.endswith(".jpg")
+]
+
+all_charuco_corners = []
+all_charucos_ids = []
+
+image_size = None
+
+for k in range(len(images)):
+    image = cv2.imread(images[k])
+    if(image is None):
+        continue
+
+    print(f"image size = {image.shape}")
+
+    charucoDetected = detector.detectBoard(image)
+
+    if charucoDetected[0] is None or len(charucoDetected[0]) < 4:
+        continue
+
+    all_charuco_corners.append(charucoDetected[0])
+    all_charucos_ids.append(charucoDetected[1])
