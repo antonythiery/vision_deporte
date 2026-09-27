@@ -3,65 +3,30 @@ import os
 import time
 import mujoco
 import mujoco.viewer
-import xml.etree.ElementTree as ET
 
-def build_xml():
-    tree = ET.parse("src/vision_deporte/models/robot.xml")
-    root = tree.getroot()
-    worldbody = root.find("worldbody")
-    asset = ET.SubElement(root, "asset")
-    visual = ET.SubElement(root, "visual")
+from tools.createScene import build_xml
+from tools.detectArucos import detectArucos
 
-    ET.SubElement(visual, "rgba", {"haze" : "0.15 0.25 0.35 1"})
-    
-    ET.SubElement(asset, "texture", {
-        "name" : "groundplane", 
-        "type" : "2d", 
-        "builtin" : "checker", 
-        "width" : "300", 
-        "height" : "300",
-        "rgb1": "0.2 0.3 0.4",
-        "rgb2": "0.1 0.2 0.3",
-        "markrgb": "0.8 0.8 0.8"
-    })
-    ET.SubElement(asset, "texture", {
-            "name" : "sky",
-            "type": "skybox",
-            "builtin": "gradient",
-            "rgb1": "0.3 0.5 0.7",
-            "rgb2": "0.0 0.0 0.0",
-            "width": "512",
-            "height": "3072"
-    })
-    ET.SubElement(asset, "material", {
-        "name" : "groundplane", 
-        "texture" : "groundplane", 
-        "texuniform" : "true", 
-        "texrepeat" : "5 5", 
-        "reflectance" : "0.2"
-    })
-    print(ET.tostring(root.find("asset"), encoding="unicode"))
-    
-    ET.SubElement(worldbody, "light", {
-        "name" : "top", 
-        "pos" : "0 0 5", 
-        "dir" : "0 0 -1", 
-        "directional" : "true"
-    })
-    ET.SubElement(worldbody, "geom", {
-        "name" : "floor", 
-        "type" : "plane", 
-        "size": "0 0 0.1", 
-        "pos" : "0 0 -1.0", 
-        "material" : "groundplane"
-    })
+## detect arucos irl
 
-    return ET.tostring(root, encoding="unicode")
+image_dir = "datas/calibration_images"
 
-xml = build_xml()
+images = [
+    os.path.join(image_dir, f)
+    for f in os.listdir(image_dir)
+    if f.endswith(".png") or f.endswith(".jpg")
+]
+
+cameraParams = np.load("src/vision_deporte/tools/cameraParams.npz")
+detectorBasedeporte = detectArucos(images[7], cameraParams)
+
+detection1 = detectorBasedeporte.detect()
+
+## setup 3D env
+
+xml = build_xml("src/vision_deporte/models/robot.xml")
 
 model = mujoco.MjModel.from_xml_string(xml)
-# from_xml_path("src/vision_deporte/models/robot.xml")
 data = mujoco.MjData(model)
 
 mujoco.mj_kinematics(model, data)
@@ -73,6 +38,22 @@ viewer = mujoco.viewer.launch_passive(
     show_right_ui=False,
 )
 
+## runtime
+
+idArucoTable = []
+idArucoTable.append(mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTable0"))
+idArucoTable.append(mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTable1"))
+idArucoTable.append(mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTable2"))
+idArucoTable.append(mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTable3"))
+
+for k in range(len(detection1)):
+    posAruco = detection1[k]
+    posAruco = np.array(posAruco[1:]).reshape(2, 3)
+    
+    model.body_pos[idArucoTable[k]] = posAruco[1] / 1000.0
+    # model.body_quat[idArucoTable[k]] = posAruco[0]
+mujoco.mj_forward(model, data)
+
 try :
     while viewer.is_running():
         mujoco.mj_step(model, data)
@@ -80,5 +61,5 @@ try :
         time.sleep(model.opt.timestep)
 except KeyboardInterrupt: 
     pass
-finally : 
+finally :
     viewer.close()
