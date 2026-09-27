@@ -3,6 +3,8 @@ import os
 import time
 import mujoco
 import mujoco.viewer
+import cv2
+from scipy.spatial.transform import Rotation
 
 from tools.createScene import build_xml
 from tools.detectArucos import detectArucos
@@ -18,7 +20,9 @@ images = [
 ]
 
 cameraParams = np.load("src/vision_deporte/tools/cameraParams.npz")
-detectorBasedeporte = detectArucos(images[7], cameraParams)
+detectorBasedeporte = detectArucos(images[2], cameraParams)
+
+# print(f"detectedIds : {detectedIds}")
 
 detection1 = detectorBasedeporte.detect()
 
@@ -49,9 +53,13 @@ idArucoTable.append(mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTabl
 for k in range(len(detection1)):
     posAruco = detection1[k]
     posAruco = np.array(posAruco[1:]).reshape(2, 3)
-    
     model.body_pos[idArucoTable[k]] = posAruco[1] / 1000.0
-    # model.body_quat[idArucoTable[k]] = posAruco[0]
+    
+    R = cv2.Rodrigues(posAruco[0])[0]
+    qA = Rotation.from_matrix(R).as_quat()
+    qposAruco = np.array([qA[1], qA[2], qA[3], qA[0]])
+
+    model.body_quat[idArucoTable[k]] = qposAruco
 mujoco.mj_forward(model, data)
 
 try :
