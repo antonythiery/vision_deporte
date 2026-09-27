@@ -6,6 +6,8 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "matplotlib>=3.11.2",
+    "mediapy>=1.2.7",
+    "mujoco>=3.14.0",
     "numpy>=2.5.3",
     "opencv-python>=5.0.0.93",
     "pandas>=3.0.5",
