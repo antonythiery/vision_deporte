@@ -1,24 +1,24 @@
   <mujoco>
     <worldbody>
 
-      <body name="arucoTable0" euler="0 0 0">
+      <body name="arucoTable0" pos="10 0 0" euler="0 0 0">
         <!-- <freejoint name="arucoTable0_joint"/> -->
         <geom name="arucoTable0" type="box" size=".1 .1 .001" pos="0 0 0" rgba="1 0 0 1"/>
       </body>
 
-      <body name="arucoTable1" euler="0 0 0">
+      <body name="arucoTable1" pos="10 0 0" euler="0 0 0">
         <!-- <freejoint name="arucoTable1_joint"/> -->
-        <geom name="arucoTable1" type="box" size=".1 .1 .001" pos="0 0 .1" rgba="1 0 0 1"/>
+        <geom name="arucoTable1" type="box" size=".1 .1 .001" pos="0 0 0" rgba="1 0 0 1"/>
       </body>
 
-      <body name="arucoTable2" euler="0 0 0">
+      <body name="arucoTable2" pos="10 0 0" euler="0 0 0">
         <!-- <freejoint name="arucoTable2_joint"/> -->
-        <geom name="arucoTable2" type="box" size=".1 .1 .001" pos="0 0 .2" rgba="1 0 0 1"/>
+        <geom name="arucoTable2" type="box" size=".1 .1 .001" pos="0 0 0" rgba="1 0 0 1"/>
       </body>
 
-      <body name="arucoTable3" euler="0 0 0">
+      <body name="arucoTable3" pos="10 0 0" euler="0 0 0">
         <!-- <freejoint name="arucoTable3_joint"/> -->
-        <geom name="arucoTable3" type="box" size=".1 .1 .001" pos="0 0 .3" rgba="1 0 0 1"/>
+        <geom name="arucoTable3" type="box" size=".1 .1 .001" pos="0 0 0" rgba="1 0 0 1"/>
       </body>
 
     </worldbody>

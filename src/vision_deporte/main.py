@@ -4,6 +4,9 @@ import time
 import mujoco
 import mujoco.viewer
 import cv2
+import matplotlib
+matplotlib.use('QtAgg')
+import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation
 
 from tools.createScene import build_xml
@@ -20,11 +23,13 @@ images = [
 ]
 
 cameraParams = np.load("src/vision_deporte/tools/cameraParams.npz")
-detectorBasedeporte = detectArucos(images[2], cameraParams)
+detectorBasedeporte = detectArucos(images[1], cameraParams)
 
 # print(f"detectedIds : {detectedIds}")
 
 detection1 = detectorBasedeporte.detect()
+
+detectorBasedeporte.showImage()
 
 ## setup 3D env
 
@@ -62,11 +67,18 @@ for k in range(len(detection1)):
     model.body_quat[idArucoTable[k]] = qposAruco
 mujoco.mj_forward(model, data)
 
+
+manager = plt.get_current_fig_manager()
+manager.window.setGeometry(0, 0, 960, 1080)
+
+
 try :
     while viewer.is_running():
         mujoco.mj_step(model, data)
         viewer.sync()
         time.sleep(model.opt.timestep)
+
+        plt.show()
 except KeyboardInterrupt: 
     pass
 finally :

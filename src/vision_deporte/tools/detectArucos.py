@@ -17,23 +17,39 @@ arucoTable = np.array([
 class detectArucos:
     """detection des arucos dans une image"""
 
-    def __init__(self, image, cameraParams):        
+    def __init__(self, image, cameraParams):
+        self.imagePath = image     
         self.image = cv2.imread(image)
 
         aruco_dict_4 = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
         self.arucoDetector = aruco.ArucoDetector(aruco_dict_4)
         self.detectedArucos = []
         self.cameraParams = cameraParams
+        self.detected_corners = []
+        self.detected_ids = []
 
     def changeImage(self, image):
+        self.imagePath = image
         self.image = cv2.imread(image)
         self.detectedArucos = []
 
+    def showImage(self):
+        img = plt.imread(self.imagePath)
+
+        for k in range(len(self.detected_corners)):
+            corners_closed = np.vstack([self.detected_corners[k], self.detected_corners[k, 0]])
+            plt.plot( 
+                corners_closed[:, 0], corners_closed[:, 1], "r-"
+            )
+            plt.text(corners_closed[0, 0]-20, corners_closed[0, 1]-20, str(self.detected_ids[k]))
+            
+        plt.imshow(img)
+
     def detect(self):
-        detection_corners, detection_ids, _ = self.arucoDetector.detectMarkers(self.image)
-        print(f"detection_ids : {detection_ids}")
-        detection_corners = np.array(detection_corners).reshape(-1, 4, 2)
-        num_detections = len(detection_ids)
+        detection_corners, self.detected_ids, _ = self.arucoDetector.detectMarkers(self.image)
+        print(f"detection_ids : {self.detected_ids}")
+        self.detected_corners = np.array(detection_corners).reshape(-1, 4, 2)
+        num_detections = len(self.detected_ids)
 
         # centers = []
         # for k in range(num_detections):
@@ -44,10 +60,10 @@ class detectArucos:
         # centers = np.array(centers)
 
         for k in range(num_detections):
-            self.detectedArucos.append(
+            self.detectedArucos.append( 
                 cv2.solvePnP(
                     arucoTable, 
-                    detection_corners[k], 
+                    self.detected_corners[k], 
                     self.cameraParams['cameraMatrix'], 
                     self.cameraParams['distCoeffs']
             ))

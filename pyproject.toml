@@ -12,7 +12,9 @@ dependencies = [
     "opencv-python>=5.0.0.93",
     "pandas>=3.0.5",
     "pillow>=12.3.0",
+    "pyqt6>=6.11.0",
     "scipy>=1.18.1",
+    "tk>=0.1.0",
 ]
 
 [project.scripts]

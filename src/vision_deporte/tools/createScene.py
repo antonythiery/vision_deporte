@@ -35,7 +35,14 @@ def build_xml(path):
         "texrepeat" : "5 5", 
         "reflectance" : "0.2"
     })
-    
+
+    ET.SubElement(worldbody, "camera", {
+        "name" : "cam",
+        "pos" : "0 0 0",
+        "fovy" : "70.9",
+        "euler" : "0 90 0"
+    })
+
     ET.SubElement(worldbody, "light", {
         "name" : "top", 
         "pos" : "0 0 5", 
