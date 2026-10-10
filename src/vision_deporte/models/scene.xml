@@ -1,5 +1,4 @@
 <mujoco model="scene">
-    <include file="robot.xml" />
     <option timestep="0.001"/>
 
     <visual>

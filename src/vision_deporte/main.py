@@ -8,6 +8,7 @@ import matplotlib
 matplotlib.use('QtAgg')
 import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation
+from pathlib import Path
 
 from tools.createScene import build_xml
 from tools.detectArucos import detectArucos
@@ -39,9 +40,13 @@ detectorBasedeporte.showImage()
 
 ## setup 3D env
 
-xml = build_xml("src/vision_deporte/models/robot.xml")
 
-model = mujoco.MjModel.from_xml_string(xml)
+models_dir = Path(__file__).parent / "models"
+xml = build_xml(models_dir / "scene.xml")
+tmp = models_dir / "_scene_runtime.xml"
+tmp.write_text(xml)
+
+model = mujoco.MjModel.from_xml_path(str(tmp))
 data = mujoco.MjData(model)
 
 mujoco.mj_kinematics(model, data)
