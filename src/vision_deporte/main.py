@@ -23,7 +23,7 @@ images = [
 ]
 
 cameraParams = np.load("src/vision_deporte/tools/cameraParams.npz")
-detectorBasedeporte = detectArucos(images[1], cameraParams)
+detectorBasedeporte = detectArucos(images[3], cameraParams)
 
 # print(f"detectedIds : {detectedIds}")
 
@@ -59,11 +59,9 @@ for k in range(len(detection1)):
     posAruco = detection1[k]
     posAruco = np.array(posAruco[1:]).reshape(2, 3)
     model.body_pos[idArucoTable[k]] = posAruco[1] / 1000.0
-    
+    print(f"posAruco : {posAruco}")
     R = cv2.Rodrigues(posAruco[0])[0]
-    qA = Rotation.from_matrix(R).as_quat()
-    qposAruco = np.array([qA[1], qA[2], qA[3], qA[0]])
-
+    qposAruco = Rotation.from_matrix(R).as_quat(scalar_first=True)
     model.body_quat[idArucoTable[k]] = qposAruco
 mujoco.mj_forward(model, data)
 
