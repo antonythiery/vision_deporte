@@ -19,7 +19,8 @@ class detectArucos:
 
     def __init__(self, image, cameraParams):
         self.imagePath = image     
-        self.image = cv2.imread(image)
+        self.image = plt.imread(image)
+        self.image = np.rot90(self.image, 2)
 
         aruco_dict_4 = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
         self.arucoDetector = aruco.ArucoDetector(aruco_dict_4)
@@ -34,8 +35,6 @@ class detectArucos:
         self.detectedArucos = []
 
     def showImage(self):
-        img = plt.imread(self.imagePath)
-
         for k in range(len(self.detected_corners)):
             corners_closed = np.vstack([self.detected_corners[k], self.detected_corners[k, 0]])
             plt.plot( 
@@ -43,7 +42,7 @@ class detectArucos:
             )
             plt.text(corners_closed[0, 0]-20, corners_closed[0, 1]-20, str(self.detected_ids[k]))
             
-        plt.imshow(img)
+        plt.imshow(self.image)
 
     def detect(self):
         detection_corners, self.detected_ids, _ = self.arucoDetector.detectMarkers(self.image)
