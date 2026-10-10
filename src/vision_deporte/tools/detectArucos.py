@@ -14,6 +14,21 @@ arucoTable = np.array([
     [-50.0, -50.0, 0.0]
 ])
 
+arucoRobot = np.array([
+    [-35.0, 35.0, 0.0], 
+    [35.0, 35.0, 0.0], 
+    [35.0, -35.0, 0.0], 
+    [-35.0, -35.0, 0.0]
+])
+
+arucoDirectory = {
+    "2" : arucoRobot,
+    "20" : arucoTable,
+    "21" : arucoTable,
+    "22" : arucoTable,
+    "23" : arucoTable
+}
+
 class detectArucos:
     """detection des arucos dans une image"""
 
@@ -48,20 +63,11 @@ class detectArucos:
         detection_corners, self.detected_ids, _ = self.arucoDetector.detectMarkers(self.image)
         print(f"detection_ids : {self.detected_ids}")
         self.detected_corners = np.array(detection_corners).reshape(-1, 4, 2)
-        num_detections = len(self.detected_ids)
 
-        # centers = []
-        # for k in range(num_detections):
-        #     center = np.sum(detection_corners[k], axis=0)
-        #     center /= 4
-        #     centers.append(center)
-
-        # centers = np.array(centers)
-
-        for k in range(num_detections):
+        for k in range(len(self.detected_ids)):
             self.detectedArucos.append( 
                 cv2.solvePnP(
-                    arucoTable, 
+                    arucoDirectory[str(self.detected_ids[k])], 
                     self.detected_corners[k], 
                     self.cameraParams['cameraMatrix'], 
                     self.cameraParams['distCoeffs']
