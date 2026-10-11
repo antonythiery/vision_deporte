@@ -61,14 +61,15 @@ viewer = mujoco.viewer.launch_passive(
 
 ## runtime
 
-idArucoTable = []
-idArucoTable.append(mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTable0"))
-idArucoTable.append(mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTable1"))
-idArucoTable.append(mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTable2"))
-idArucoTable.append(mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTable3"))
+arucoIdtoObjectId = {
+    "20" : mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTable0"),
+    "21" : mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTable1"),
+    "22" : mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTable2"),
+    "23" : mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoTable3"),
 
+    "2" : mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoRobot1"),
+}
 idCam = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"cam")
-
 idTable = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"table_sans_bordure")
 
 posTable = np.array([0.0, 0.0, 0.0])
@@ -84,18 +85,20 @@ allQuatsTable = []
 
 for k in range(len(detection1)):
     idAruco = detectorBasedeporte.detected_ids[k]
+    idObject = arucoIdtoObjectId[str(idAruco)]
     posAruco = detection1[k]
     posAruco = np.array(posAruco[1:]).reshape(2, 3)
     R = cv2.Rodrigues(posAruco[0])[0]
     qposAruco = Rotation.from_matrix(T_world_cam @ R).as_quat(scalar_first=True)
     posArucoCam = posAruco[1] / 1000.0
-    model.body_pos[idArucoTable[k]] = T_world_cam @ posArucoCam + posCam
-    model.body_quat[idArucoTable[k]] = qposAruco
 
+    model.body_pos[idObject] = T_world_cam @ posArucoCam + posCam
+    model.body_quat[idObject] = qposAruco
+    
     if(20<=idAruco<=23):
         nbArucoTableDetected += 1
-        posTable += model.body_pos[idArucoTable[k]] - posArucoTable[str(idAruco)]
-        allQuatsTable.append(model.body_quat[idArucoTable[k]])
+        posTable += model.body_pos[idObject] - posArucoTable[str(idAruco)]
+        allQuatsTable.append(model.body_quat[idObject])
 
 posTable /= nbArucoTableDetected
 allRotTable = Rotation.from_quat(allQuatsTable, scalar_first=True)
