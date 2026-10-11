@@ -29,6 +29,7 @@ arucoDirectory = {
     "23" : arucoTable
 }
 
+
 class detectArucos:
     """detection des arucos dans une image"""
 
@@ -72,5 +73,4 @@ class detectArucos:
                     self.cameraParams['cameraMatrix'], 
                     self.cameraParams['distCoeffs']
             ))
-
         return(self.detectedArucos)
