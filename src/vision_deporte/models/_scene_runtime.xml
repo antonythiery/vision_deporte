@@ -1,5 +1,12 @@
 <mujoco model="scene">
-    <compiler meshdir="table/assets" texturedir="table/assets" /><include file="box_tests.xml" /><include file="table/table.xml" /><option timestep="0.001" />
+    <option timestep="0.001" />
+
+    <include file="box_tests.xml" />
+
+    <asset>
+        <model name="table" file="table/table.xml" />
+        <model name="robot" file="robot/robot.xml" />
+    </asset>
 
     <visual>
         <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0" />
@@ -16,5 +23,11 @@
     <worldbody>
         <light pos="0 0 3.5" dir="0 0 -1" directional="true" />
         <geom name="floor" size="0 0 0.05" pos="0 0 0" type="plane" material="groundplane" />
+        <frame>
+            <attach model="table" body="table_sans_bordure" prefix="table_" />
+        </frame>
+        <frame pos="10 0 0">
+            <attach model="robot" body="base_metal" prefix="robot_" />
+        </frame>
     </worldbody>
 </mujoco>

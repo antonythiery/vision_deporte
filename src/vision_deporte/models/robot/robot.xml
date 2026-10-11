@@ -1,0 +1,805 @@
+<?xml version="1.0" ?>
+<!-- Generated using onshape-to-robot -->
+<!-- Onshape https://cad.onshape.com/documents/0284a40034354dbe74c82a48/w/0041b6a09eb6fa5a1d433cd4/e/9ea828e27e4986b8c57a3c58 -->
+<mujoco model="robot">
+  <compiler angle="radian" meshdir="assets" autolimits="true"/>
+  <default>
+    <default class="robot">
+      <joint frictionloss="0.1" armature="0.005"/>
+      <position kp="50" dampratio="1"/>
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="collision">
+        <geom group="3"/>
+      </default>
+    </default>
+  </default>
+  <worldbody>
+    <!-- Link base_metal -->
+    <body name="base_metal" pos="0 0 0" quat="1 0 0 0" childclass="robot">
+      <!-- <freejoint name="base_metal_freejoint"/> -->
+      <inertial pos="-0.00241454 0.0031061 0.159341" mass="6.27597" fullinertia="0.166381 0.13902 0.0641414 -0.000179912 -0.000790348 0.00130904"/>
+      <!-- Part patin -->
+      <geom type="mesh" class="visual" pos="0.0635 -0.145 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 -0.145 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <!-- Part speaker -->
+      <geom type="mesh" class="visual" pos="-0.00796457 0.112723 0.1366" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="speaker" material="speaker_material"/>
+      <geom type="mesh" class="collision" pos="-0.00796457 0.112723 0.1366" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="speaker" material="speaker_material"/>
+      <!-- Part profile1515x320 -->
+      <geom type="mesh" class="visual" pos="0.0635 -0.17 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 -0.17 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
+      <!-- Part profile1515x320_2 -->
+      <geom type="mesh" class="visual" pos="-0.0915 0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
+      <geom type="mesh" class="collision" pos="-0.0915 0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
+      <!-- Part ecran_attache -->
+      <geom type="mesh" class="visual" pos="-0.0197597 0.14085 0.2646" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="ecran_attache" material="ecran_attache_material"/>
+      <geom type="mesh" class="collision" pos="-0.0197597 0.14085 0.2646" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="ecran_attache" material="ecran_attache_material"/>
+      <!-- Part profile1515x320_3 -->
+      <geom type="mesh" class="visual" pos="0.0635 0.17 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 0.17 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
+      <!-- Part patin_2 -->
+      <geom type="mesh" class="visual" pos="0.0635 0.145 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 0.145 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <!-- Part patin_3 -->
+      <geom type="mesh" class="visual" pos="-0.0915 0.085 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <geom type="mesh" class="collision" pos="-0.0915 0.085 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <!-- Part base_metal -->
+      <geom type="mesh" class="visual" pos="-0.014 -0 0.0106" quat="0.707107 0 -0 0.707107" mesh="base_metal" material="base_metal_material"/>
+      <geom type="mesh" class="collision" pos="-0.014 -0 0.0106" quat="0.707107 0 -0 0.707107" mesh="base_metal" material="base_metal_material"/>
+      <!-- Part speaker_2 -->
+      <geom type="mesh" class="visual" pos="-0.00796457 -0.112723 0.1366" quat="0.588797 0.391559 -0.588797 0.391559" mesh="speaker" material="speaker_material"/>
+      <geom type="mesh" class="collision" pos="-0.00796457 -0.112723 0.1366" quat="0.588797 0.391559 -0.588797 0.391559" mesh="speaker" material="speaker_material"/>
+      <!-- Part equerre_arriere_gauche -->
+      <geom type="mesh" class="visual" pos="-0.0915 0.105 0.0166" quat="0 0 -1 -0" mesh="equerre_arriere_gauche" material="equerre_arriere_gauche_material"/>
+      <geom type="mesh" class="collision" pos="-0.0915 0.105 0.0166" quat="0 0 -1 -0" mesh="equerre_arriere_gauche" material="equerre_arriere_gauche_material"/>
+      <!-- Part tweater -->
+      <geom type="mesh" class="visual" pos="-0.081 -0.0595 0.0586" quat="0.5 -0.5 -0.5 0.5" mesh="tweater" material="tweater_material"/>
+      <geom type="mesh" class="collision" pos="-0.081 -0.0595 0.0586" quat="0.5 -0.5 -0.5 0.5" mesh="tweater" material="tweater_material"/>
+      <!-- Part marqueur_aruco -->
+      <geom type="mesh" class="visual" pos="0.002 -0 0.4304" quat="0.707107 0 0 0.707107" mesh="marqueur_aruco" material="marqueur_aruco_material"/>
+      <geom type="mesh" class="collision" pos="0.002 -0 0.4304" quat="0.707107 0 0 0.707107" mesh="marqueur_aruco" material="marqueur_aruco_material"/>
+      <!-- Part profile1515x150 -->
+      <geom type="mesh" class="visual" pos="0.0589005 0.170584 0.3261" quat="0.391559 -0.391559 -0.588797 0.588797" mesh="profile1515x150" material="profile1515x150_material"/>
+      <geom type="mesh" class="collision" pos="0.0589005 0.170584 0.3261" quat="0.391559 -0.391559 -0.588797 0.588797" mesh="profile1515x150" material="profile1515x150_material"/>
+      <!-- Part equerre_droite -->
+      <geom type="mesh" class="visual" pos="0.0635 -0.17 0.0166" quat="0 -1 -0 0" mesh="equerre_droite" material="equerre_droite_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 -0.17 0.0166" quat="0 -1 -0 0" mesh="equerre_droite" material="equerre_droite_material"/>
+      <!-- Part ecran_screen -->
+      <geom type="mesh" class="visual" pos="-0.0197597 0.14085 0.2646" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="ecran_screen" material="ecran_screen_material"/>
+      <geom type="mesh" class="collision" pos="-0.0197597 0.14085 0.2646" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="ecran_screen" material="ecran_screen_material"/>
+      <!-- Part back_pannel -->
+      <geom type="mesh" class="visual" pos="-0.102 -0 0.0586" quat="0.707107 -0 -0 0.707107" mesh="back_pannel" material="back_pannel_material"/>
+      <geom type="mesh" class="collision" pos="-0.102 -0 0.0586" quat="0.707107 -0 -0 0.707107" mesh="back_pannel" material="back_pannel_material"/>
+      <!-- Part equerre_gauche -->
+      <geom type="mesh" class="visual" pos="0.0635 0.17 0.3156" quat="1 0 0 -0" mesh="equerre_gauche" material="equerre_gauche_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 0.17 0.3156" quat="1 0 0 -0" mesh="equerre_gauche" material="equerre_gauche_material"/>
+      <!-- Part profile1515x325 -->
+      <geom type="mesh" class="visual" pos="0.0635 0.1625 0.3261" quat="0.5 0.5 -0.5 0.5" mesh="profile1515x325" material="profile1515x325_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 0.1625 0.3261" quat="0.5 0.5 -0.5 0.5" mesh="profile1515x325" material="profile1515x325_material"/>
+      <!-- Part equerre_arriere_gauche_2 -->
+      <geom type="mesh" class="visual" pos="-0.0915 0.105 0.3156" quat="0 0 0 -1" mesh="equerre_arriere_gauche__2" material="equerre_arriere_gauche__2_material"/>
+      <geom type="mesh" class="collision" pos="-0.0915 0.105 0.3156" quat="0 0 0 -1" mesh="equerre_arriere_gauche__2" material="equerre_arriere_gauche__2_material"/>
+      <!-- Part elec_panel -->
+      <geom type="mesh" class="visual" pos="-0.0014 0.0125 0.1761" quat="0.5 -0.5 -0.5 0.5" mesh="elec_panel" material="elec_panel_material"/>
+      <geom type="mesh" class="collision" pos="-0.0014 0.0125 0.1761" quat="0.5 -0.5 -0.5 0.5" mesh="elec_panel" material="elec_panel_material"/>
+      <!-- Part equerre_arriere_droit -->
+      <geom type="mesh" class="visual" pos="-0.0915 -0.105 0.0166" quat="0 0 -1 -0" mesh="equerre_arriere_droit" material="equerre_arriere_droit_material"/>
+      <geom type="mesh" class="collision" pos="-0.0915 -0.105 0.0166" quat="0 0 -1 -0" mesh="equerre_arriere_droit" material="equerre_arriere_droit_material"/>
+      <!-- Part top_pannel -->
+      <geom type="mesh" class="visual" pos="0.00290755 0 0.3336" quat="0.707107 0 0 0.707107" mesh="top_pannel" material="top_pannel_material"/>
+      <geom type="mesh" class="collision" pos="0.00290755 0 0.3336" quat="0.707107 0 0 0.707107" mesh="top_pannel" material="top_pannel_material"/>
+      <!-- Part equerre_gauche_2 -->
+      <geom type="mesh" class="visual" pos="0.0635 0.17 0.0166" quat="0 -1 -0 0" mesh="equerre_gauche__2" material="equerre_gauche__2_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 0.17 0.0166" quat="0 -1 -0 0" mesh="equerre_gauche__2" material="equerre_gauche__2_material"/>
+      <!-- Part patin_4 -->
+      <geom type="mesh" class="visual" pos="-0.0915 -0.085 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <geom type="mesh" class="collision" pos="-0.0915 -0.085 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <!-- Part profile1515x150_2 -->
+      <geom type="mesh" class="visual" pos="0.0589005 -0.170584 0.3261" quat="0.391559 0.391559 -0.588797 -0.588797" mesh="profile1515x150" material="profile1515x150_material"/>
+      <geom type="mesh" class="collision" pos="0.0589005 -0.170584 0.3261" quat="0.391559 0.391559 -0.588797 -0.588797" mesh="profile1515x150" material="profile1515x150_material"/>
+      <!-- Part tweater_2 -->
+      <geom type="mesh" class="visual" pos="-0.081 0.0595 0.0586" quat="0.5 -0.5 -0.5 0.5" mesh="tweater" material="tweater_material"/>
+      <geom type="mesh" class="collision" pos="-0.081 0.0595 0.0586" quat="0.5 -0.5 -0.5 0.5" mesh="tweater" material="tweater_material"/>
+      <!-- Part profile1515x195 -->
+      <geom type="mesh" class="visual" pos="-0.0915 0.0975 0.3261" quat="0.5 0.5 -0.5 0.5" mesh="profile1515x195" material="profile1515x195_material"/>
+      <geom type="mesh" class="collision" pos="-0.0915 0.0975 0.3261" quat="0.5 0.5 -0.5 0.5" mesh="profile1515x195" material="profile1515x195_material"/>
+      <!-- Part equerre_droite_2 -->
+      <geom type="mesh" class="visual" pos="0.0635 -0.17 0.3156" quat="1 0 0 0" mesh="equerre_droite__2" material="equerre_droite__2_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 -0.17 0.3156" quat="1 0 0 0" mesh="equerre_droite__2" material="equerre_droite__2_material"/>
+      <!-- Part equerre_arriere_droit_2 -->
+      <geom type="mesh" class="visual" pos="-0.0915 -0.105 0.3156" quat="0 0 0 -1" mesh="equerre_arriere_droit__2" material="equerre_arriere_droit__2_material"/>
+      <geom type="mesh" class="collision" pos="-0.0915 -0.105 0.3156" quat="0 0 0 -1" mesh="equerre_arriere_droit__2" material="equerre_arriere_droit__2_material"/>
+      <!-- Part side_pannel -->
+      <geom type="mesh" class="visual" pos="-0.0215 0.145 0.1751" quat="0.197238 -0 0 -0.980356" mesh="side_pannel" material="side_pannel_material"/>
+      <geom type="mesh" class="collision" pos="-0.0215 0.145 0.1751" quat="0.197238 -0 0 -0.980356" mesh="side_pannel" material="side_pannel_material"/>
+      <!-- Part side_pannel_2 -->
+      <geom type="mesh" class="visual" pos="-0.0226602 -0.147767 0.1751" quat="0.197238 0 -0 0.980356" mesh="side_pannel__2" material="side_pannel__2_material"/>
+      <geom type="mesh" class="collision" pos="-0.0226602 -0.147767 0.1751" quat="0.197238 0 -0 0.980356" mesh="side_pannel__2" material="side_pannel__2_material"/>
+      <!-- Part profile1515x320_4 -->
+      <geom type="mesh" class="visual" pos="-0.0915 -0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
+      <geom type="mesh" class="collision" pos="-0.0915 -0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
+      <!-- Part panneau_actio_top -->
+      <geom type="mesh" class="visual" pos="-0.003 0.0125 0.3011" quat="0.707107 0 0 0.707107" mesh="panneau_actio_top" material="panneau_actio_top_material"/>
+      <geom type="mesh" class="collision" pos="-0.003 0.0125 0.3011" quat="0.707107 0 0 0.707107" mesh="panneau_actio_top" material="panneau_actio_top_material"/>
+      <!-- Part equerre_droite_3 -->
+      <geom type="mesh" class="visual" pos="-0.018 -0.0125 0.0151" quat="0.707107 -0 0 -0.707107" mesh="equerre_droite__3" material="equerre_droite__3_material"/>
+      <geom type="mesh" class="collision" pos="-0.018 -0.0125 0.0151" quat="0.707107 -0 0 -0.707107" mesh="equerre_droite__3" material="equerre_droite__3_material"/>
+      <!-- Part cache_cable -->
+      <geom type="mesh" class="visual" pos="-0.00137152 0.011421 0.0398723" quat="0.707107 -0 0 -0.707107" mesh="cache_cable" material="cache_cable_material"/>
+      <geom type="mesh" class="collision" pos="-0.00137152 0.011421 0.0398723" quat="0.707107 -0 0 -0.707107" mesh="cache_cable" material="cache_cable_material"/>
+      <!-- Part rail_lineaire_haut -->
+      <geom type="mesh" class="visual" pos="-0.0065 -0.12145 0.31312" quat="0 -0.707107 0 -0.707107" mesh="rail_lineaire_haut" material="rail_lineaire_haut_material"/>
+      <geom type="mesh" class="collision" pos="-0.0065 -0.12145 0.31312" quat="0 -0.707107 0 -0.707107" mesh="rail_lineaire_haut" material="rail_lineaire_haut_material"/>
+      <!-- Part equerre_gauche_3 -->
+      <geom type="mesh" class="visual" pos="-0.018 0.0375 0.0151" quat="0.707107 -0 0 -0.707107" mesh="equerre_gauche__3" material="equerre_gauche__3_material"/>
+      <geom type="mesh" class="collision" pos="-0.018 0.0375 0.0151" quat="0.707107 -0 0 -0.707107" mesh="equerre_gauche__3" material="equerre_gauche__3_material"/>
+      <!-- Part part_1 -->
+      <geom type="mesh" class="visual" pos="0.0071 -0.0875 0.0271" quat="0.5 -0.5 0.5 -0.5" mesh="part_1" material="part_1_material"/>
+      <geom type="mesh" class="collision" pos="0.0071 -0.0875 0.0271" quat="0.5 -0.5 0.5 -0.5" mesh="part_1" material="part_1_material"/>
+      <!-- Part cache_cable_2 -->
+      <geom type="mesh" class="visual" pos="-0.00137152 0.011421 0.0398723" quat="0.707107 -0 0 -0.707107" mesh="cache_cable__2" material="cache_cable__2_material"/>
+      <geom type="mesh" class="collision" pos="-0.00137152 0.011421 0.0398723" quat="0.707107 -0 0 -0.707107" mesh="cache_cable__2" material="cache_cable__2_material"/>
+      <!-- Part cache_cable_2 -->
+      <geom type="mesh" class="visual" pos="-0.00137152 0.011421 0.0398723" quat="0.707107 -0 0 -0.707107" mesh="cache_cable_2" material="cache_cable_2_material"/>
+      <geom type="mesh" class="collision" pos="-0.00137152 0.011421 0.0398723" quat="0.707107 -0 0 -0.707107" mesh="cache_cable_2" material="cache_cable_2_material"/>
+      <!-- Part rail_linéaire_haut -->
+      <geom type="mesh" class="visual" pos="-0.0065 0.1215 0.3131" quat="0.707107 0 -0.707107 -0" mesh="rail_linéaire_haut" material="rail_linéaire_haut_material"/>
+      <geom type="mesh" class="collision" pos="-0.0065 0.1215 0.3131" quat="0.707107 0 -0.707107 -0" mesh="rail_linéaire_haut" material="rail_linéaire_haut_material"/>
+      <!-- Part rail_lineaire_haut_2 -->
+      <geom type="mesh" class="visual" pos="-0.0065 -0.12145 0.31312" quat="0 -0.707107 0 -0.707107" mesh="rail_lineaire_haut" material="rail_lineaire_haut_material"/>
+      <geom type="mesh" class="collision" pos="-0.0065 -0.12145 0.31312" quat="0 -0.707107 0 -0.707107" mesh="rail_lineaire_haut" material="rail_lineaire_haut_material"/>
+      <!-- Part poulie_moteur -->
+      <geom type="mesh" class="visual" pos="0.0016 0.0625 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="poulie_moteur" material="poulie_moteur_material"/>
+      <geom type="mesh" class="collision" pos="0.0016 0.0625 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="poulie_moteur" material="poulie_moteur_material"/>
+      <!-- Part rail_linéaire_haut_2 -->
+      <geom type="mesh" class="visual" pos="-0.0065 0.1215 0.3131" quat="0.707107 0 -0.707107 -0" mesh="rail_linéaire_haut" material="rail_linéaire_haut_material"/>
+      <geom type="mesh" class="collision" pos="-0.0065 0.1215 0.3131" quat="0.707107 0 -0.707107 -0" mesh="rail_linéaire_haut" material="rail_linéaire_haut_material"/>
+      <!-- Part equerre_droite_4 -->
+      <geom type="mesh" class="visual" pos="-0.0305 -0.0625 0.0151" quat="0.707107 -0 0 -0.707107" mesh="equerre_droite__4" material="equerre_droite__4_material"/>
+      <geom type="mesh" class="collision" pos="-0.0305 -0.0625 0.0151" quat="0.707107 -0 0 -0.707107" mesh="equerre_droite__4" material="equerre_droite__4_material"/>
+      <!-- Part equerre_gauche_4 -->
+      <geom type="mesh" class="visual" pos="-0.0305 0.0875 0.0151" quat="0.707107 -0 0 -0.707107" mesh="equerre_gauche__4" material="equerre_gauche__4_material"/>
+      <geom type="mesh" class="collision" pos="-0.0305 0.0875 0.0151" quat="0.707107 -0 0 -0.707107" mesh="equerre_gauche__4" material="equerre_gauche__4_material"/>
+      <!-- Part panneau_actio_bas -->
+      <geom type="mesh" class="visual" pos="-0.0014 0.0125 0.0386" quat="0.707107 -0 0 -0.707107" mesh="panneau_actio_bas" material="panneau_actio_bas_material"/>
+      <geom type="mesh" class="collision" pos="-0.0014 0.0125 0.0386" quat="0.707107 -0 0 -0.707107" mesh="panneau_actio_bas" material="panneau_actio_bas_material"/>
+      <!-- Part motor_support -->
+      <geom type="mesh" class="visual" pos="-0 -0.1592 0.0366" quat="0 0 0 -1" mesh="motor_support" material="motor_support_material"/>
+      <geom type="mesh" class="collision" pos="-0 -0.1592 0.0366" quat="0 0 0 -1" mesh="motor_support" material="motor_support_material"/>
+      <!-- Part mks -->
+      <geom type="mesh" class="visual" pos="-0 -0.1179 0.0366" quat="0 -0 0 1" mesh="mks" material="mks_material"/>
+      <geom type="mesh" class="collision" pos="-0 -0.1179 0.0366" quat="0 -0 0 1" mesh="mks" material="mks_material"/>
+      <!-- Part support_filtre -->
+      <geom type="mesh" class="visual" pos="-0.0545 -0.1005 0.05385" quat="0.5 -0.5 0.5 0.5" mesh="support_filtre" material="support_filtre_material"/>
+      <geom type="mesh" class="collision" pos="-0.0545 -0.1005 0.05385" quat="0.5 -0.5 0.5 0.5" mesh="support_filtre" material="support_filtre_material"/>
+      <!-- Part filtre -->
+      <geom type="mesh" class="visual" pos="-0.052 -0.0975 0.05385" quat="0.5 -0.5 0.5 0.5" mesh="filtre" material="filtre_material"/>
+      <geom type="mesh" class="collision" pos="-0.052 -0.0975 0.05385" quat="0.5 -0.5 0.5 0.5" mesh="filtre" material="filtre_material"/>
+      <!-- Part filtre_2 -->
+      <geom type="mesh" class="visual" pos="-0.052 -0.1005 0.05385" quat="0.5 0.5 -0.5 0.5" mesh="filtre" material="filtre_material"/>
+      <geom type="mesh" class="collision" pos="-0.052 -0.1005 0.05385" quat="0.5 0.5 -0.5 0.5" mesh="filtre" material="filtre_material"/>
+      <!-- Part part_1_2 -->
+      <geom type="mesh" class="visual" pos="0.002 -0 0.3516" quat="1 0 0 -0" mesh="part_1__2" material="part_1__2_material"/>
+      <geom type="mesh" class="collision" pos="0.002 -0 0.3516" quat="1 0 0 -0" mesh="part_1__2" material="part_1__2_material"/>
+      <!-- Part balise_tete -->
+      <geom type="mesh" class="visual" pos="0.002 -0 0.3899" quat="0.707107 -0 0 -0.707107" mesh="balise_tete" material="balise_tete_material"/>
+      <geom type="mesh" class="collision" pos="0.002 -0 0.3899" quat="0.707107 -0 0 -0.707107" mesh="balise_tete" material="balise_tete_material"/>
+      <!-- Part balise_pied -->
+      <geom type="mesh" class="visual" pos="0.002 0 0.3366" quat="0.707107 -0 0 -0.707107" mesh="balise_pied" material="balise_pied_material"/>
+      <geom type="mesh" class="collision" pos="0.002 0 0.3366" quat="0.707107 -0 0 -0.707107" mesh="balise_pied" material="balise_pied_material"/>
+      <!-- Part batterie_holder_attach -->
+      <geom type="mesh" class="visual" pos="-0.0905 -0 0.0633" quat="0.5 0.5 -0.5 -0.5" mesh="batterie_holder_attach" material="batterie_holder_attach_material"/>
+      <geom type="mesh" class="collision" pos="-0.0905 -0 0.0633" quat="0.5 0.5 -0.5 -0.5" mesh="batterie_holder_attach" material="batterie_holder_attach_material"/>
+      <!-- Part parkside_pap_20_b3 -->
+      <geom type="mesh" class="visual" pos="-0.01664 -0 0.0148" quat="0.707107 -0 0 -0.707107" mesh="parkside_pap_20_b3" material="parkside_pap_20_b3_material"/>
+      <geom type="mesh" class="collision" pos="-0.01664 -0 0.0148" quat="0.707107 -0 0 -0.707107" mesh="parkside_pap_20_b3" material="parkside_pap_20_b3_material"/>
+      <!-- Part batterie_holder -->
+      <geom type="mesh" class="visual" pos="-0.0715 -0 0.0193537" quat="0.5 0.5 -0.5 -0.5" mesh="batterie_holder" material="batterie_holder_material"/>
+      <geom type="mesh" class="collision" pos="-0.0715 -0 0.0193537" quat="0.5 0.5 -0.5 -0.5" mesh="batterie_holder" material="batterie_holder_material"/>
+      <!-- Part motor_support_2 -->
+      <geom type="mesh" class="visual" pos="0 0.1592 0.0366" quat="1 -0 0 -0" mesh="motor_support" material="motor_support_material"/>
+      <geom type="mesh" class="collision" pos="0 0.1592 0.0366" quat="1 -0 0 -0" mesh="motor_support" material="motor_support_material"/>
+      <!-- Part mks_2 -->
+      <geom type="mesh" class="visual" pos="0 0.1179 0.0366" quat="1 0 0 0" mesh="mks" material="mks_material"/>
+      <geom type="mesh" class="collision" pos="0 0.1179 0.0366" quat="1 0 0 0" mesh="mks" material="mks_material"/>
+      <!-- Part fin_course_support -->
+      <geom type="mesh" class="visual" pos="0.0122 -0.065 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_course_support" material="fin_course_support_material"/>
+      <geom type="mesh" class="collision" pos="0.0122 -0.065 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_course_support" material="fin_course_support_material"/>
+      <!-- Part fin_de_course -->
+      <geom type="mesh" class="visual" pos="0.0122 -0.065 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_de_course" material="fin_de_course_material"/>
+      <geom type="mesh" class="collision" pos="0.0122 -0.065 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_de_course" material="fin_de_course_material"/>
+      <!-- Part link_chassis -->
+      <geom type="mesh" class="visual" pos="-0.0004 -0.0625 0.3236" quat="0.707107 0.707107 0 -0" mesh="link_chassis" material="link_chassis_material"/>
+      <geom type="mesh" class="collision" pos="-0.0004 -0.0625 0.3236" quat="0.707107 0.707107 0 -0" mesh="link_chassis" material="link_chassis_material"/>
+      <!-- Part jst_xh_3_v3 -->
+      <geom type="mesh" class="visual" pos="0.01235 -0.0730116 0.0166" quat="0.707107 0.707107 0 -0" mesh="jst_xh_3_v3" material="jst_xh_3_v3_material"/>
+      <geom type="mesh" class="collision" pos="0.01235 -0.0730116 0.0166" quat="0.707107 0.707107 0 -0" mesh="jst_xh_3_v3" material="jst_xh_3_v3_material"/>
+      <!-- Part nema14_v4 -->
+      <geom type="mesh" class="visual" pos="-0.0373 0.0625 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4" material="nema14_v4_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 0.0625 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4" material="nema14_v4_material"/>
+      <!-- Part nema14_v4_2 -->
+      <geom type="mesh" class="visual" pos="-0.0373 0.0625 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__2" material="nema14_v4__2_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 0.0625 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__2" material="nema14_v4__2_material"/>
+      <!-- Part nema14_v4_3 -->
+      <geom type="mesh" class="visual" pos="-0.0373 0.0625 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__3" material="nema14_v4__3_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 0.0625 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__3" material="nema14_v4__3_material"/>
+      <!-- Part nema14_v4_4 -->
+      <geom type="mesh" class="visual" pos="-0.0373 0.0625 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__4" material="nema14_v4__4_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 0.0625 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__4" material="nema14_v4__4_material"/>
+      <!-- Part poulie_moteur_2 -->
+      <geom type="mesh" class="visual" pos="0.0016 -0.0375 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="poulie_moteur" material="poulie_moteur_material"/>
+      <geom type="mesh" class="collision" pos="0.0016 -0.0375 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="poulie_moteur" material="poulie_moteur_material"/>
+      <!-- Part poulie_moteur_3 -->
+      <geom type="mesh" class="visual" pos="0.0016 0.0125 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="poulie_moteur" material="poulie_moteur_material"/>
+      <geom type="mesh" class="collision" pos="0.0016 0.0125 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="poulie_moteur" material="poulie_moteur_material"/>
+      <!-- Part poulie_moteur_4 -->
+      <geom type="mesh" class="visual" pos="0.0016 -0.0875 0.2956" quat="0.5 0.5 0.5 0.5" mesh="poulie_moteur" material="poulie_moteur_material"/>
+      <geom type="mesh" class="collision" pos="0.0016 -0.0875 0.2956" quat="0.5 0.5 0.5 0.5" mesh="poulie_moteur" material="poulie_moteur_material"/>
+      <!-- Part cache_cable_3 -->
+      <geom type="mesh" class="visual" pos="-0.00137152 -0.088579 0.0398723" quat="0.707107 -0 0 -0.707107" mesh="cache_cable__2" material="cache_cable__2_material"/>
+      <geom type="mesh" class="collision" pos="-0.00137152 -0.088579 0.0398723" quat="0.707107 -0 0 -0.707107" mesh="cache_cable__2" material="cache_cable__2_material"/>
+      <!-- Part cache_cable_4 -->
+      <geom type="mesh" class="visual" pos="-0.00137152 -0.038579 0.0398723" quat="0.707107 -0 0 -0.707107" mesh="cache_cable__2" material="cache_cable__2_material"/>
+      <geom type="mesh" class="collision" pos="-0.00137152 -0.038579 0.0398723" quat="0.707107 -0 0 -0.707107" mesh="cache_cable__2" material="cache_cable__2_material"/>
+      <!-- Part part_1_3 -->
+      <geom type="mesh" class="visual" pos="0.0071 0.0125 0.3011" quat="0.5 0.5 0.5 0.5" mesh="part_1" material="part_1_material"/>
+      <geom type="mesh" class="collision" pos="0.0071 0.0125 0.3011" quat="0.5 0.5 0.5 0.5" mesh="part_1" material="part_1_material"/>
+      <!-- Part part_1_4 -->
+      <geom type="mesh" class="visual" pos="0.0071 0.0625 0.3011" quat="0.5 0.5 0.5 0.5" mesh="part_1" material="part_1_material"/>
+      <geom type="mesh" class="collision" pos="0.0071 0.0625 0.3011" quat="0.5 0.5 0.5 0.5" mesh="part_1" material="part_1_material"/>
+      <!-- Part part_1_5 -->
+      <geom type="mesh" class="visual" pos="0.0071 -0.0375 0.3011" quat="0.5 0.5 0.5 0.5" mesh="part_1" material="part_1_material"/>
+      <geom type="mesh" class="collision" pos="0.0071 -0.0375 0.3011" quat="0.5 0.5 0.5 0.5" mesh="part_1" material="part_1_material"/>
+      <!-- Part nema17_motor_ax -->
+      <geom type="mesh" class="visual" pos="-0 -0.1322 0.0366" quat="0.201762 0.201762 0.677711 -0.677711" mesh="nema17_motor_ax" material="nema17_motor_ax_material"/>
+      <geom type="mesh" class="collision" pos="-0 -0.1322 0.0366" quat="0.201762 0.201762 0.677711 -0.677711" mesh="nema17_motor_ax" material="nema17_motor_ax_material"/>
+      <!-- Part nema17_motor -->
+      <geom type="mesh" class="visual" pos="-0 -0.13655 0.0366" quat="0 0 0.707107 -0.707107" mesh="nema17_motor" material="nema17_motor_material"/>
+      <geom type="mesh" class="collision" pos="-0 -0.13655 0.0366" quat="0 0 0.707107 -0.707107" mesh="nema17_motor" material="nema17_motor_material"/>
+      <!-- Part nema17_motor_ax_2 -->
+      <geom type="mesh" class="visual" pos="0 0.1322 0.0366" quat="0.707107 -0.707107 0 0" mesh="nema17_motor_ax" material="nema17_motor_ax_material"/>
+      <geom type="mesh" class="collision" pos="0 0.1322 0.0366" quat="0.707107 -0.707107 0 0" mesh="nema17_motor_ax" material="nema17_motor_ax_material"/>
+      <!-- Part nema17_motor_2 -->
+      <geom type="mesh" class="visual" pos="0 0.13655 0.0366" quat="0.707107 -0.707107 0 0" mesh="nema17_motor" material="nema17_motor_material"/>
+      <geom type="mesh" class="collision" pos="0 0.13655 0.0366" quat="0.707107 -0.707107 0 0" mesh="nema17_motor" material="nema17_motor_material"/>
+      <!-- Part homing_bite -->
+      <geom type="mesh" class="visual" pos="0.0116 -0.0625 0.0838" quat="0.707107 0 0 0.707107" mesh="homing_bite" material="homing_bite_material"/>
+      <geom type="mesh" class="collision" pos="0.0116 -0.0625 0.0838" quat="0.707107 0 0 0.707107" mesh="homing_bite" material="homing_bite_material"/>
+      <!-- Part chariot -->
+      <geom type="mesh" class="visual" pos="0.0116 -0.0625 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot" material="chariot_material"/>
+      <geom type="mesh" class="collision" pos="0.0116 -0.0625 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot" material="chariot_material"/>
+      <!-- Part chariot_charniere -->
+      <geom type="mesh" class="visual" pos="0.0116 -0.0625 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot_charniere" material="chariot_charniere_material"/>
+      <geom type="mesh" class="collision" pos="0.0116 -0.0625 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot_charniere" material="chariot_charniere_material"/>
+      <!-- Part spur_gear__14_teeth -->
+      <geom type="mesh" class="visual" pos="0.047158 -0.05375 0.069218" quat="0.707107 0.707107 0 0" mesh="spur_gear__14_teeth" material="spur_gear__14_teeth_material"/>
+      <geom type="mesh" class="collision" pos="0.047158 -0.05375 0.069218" quat="0.707107 0.707107 0 0" mesh="spur_gear__14_teeth" material="spur_gear__14_teeth_material"/>
+      <!-- Part part_1_6 -->
+      <geom type="mesh" class="visual" pos="0.0538346 -0.0625 0.1043" quat="0 -0 -0.707107 -0.707107" mesh="part_1__3" material="part_1__3_material"/>
+      <geom type="mesh" class="collision" pos="0.0538346 -0.0625 0.1043" quat="0 -0 -0.707107 -0.707107" mesh="part_1__3" material="part_1__3_material"/>
+      <!-- Part fin_course_support_2 -->
+      <geom type="mesh" class="visual" pos="0.0122 0.085 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_course_support" material="fin_course_support_material"/>
+      <geom type="mesh" class="collision" pos="0.0122 0.085 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_course_support" material="fin_course_support_material"/>
+      <!-- Part fin_de_course_2 -->
+      <geom type="mesh" class="visual" pos="0.0122 0.085 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_de_course" material="fin_de_course_material"/>
+      <geom type="mesh" class="collision" pos="0.0122 0.085 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_de_course" material="fin_de_course_material"/>
+      <!-- Part link_chassis_2 -->
+      <geom type="mesh" class="visual" pos="-0.0004 0.0875 0.3236" quat="0.707107 0.707107 0 -0" mesh="link_chassis" material="link_chassis_material"/>
+      <geom type="mesh" class="collision" pos="-0.0004 0.0875 0.3236" quat="0.707107 0.707107 0 -0" mesh="link_chassis" material="link_chassis_material"/>
+      <!-- Part jst_xh_3_v3_2 -->
+      <geom type="mesh" class="visual" pos="0.01235 0.0769884 0.0166" quat="0.707107 0.707107 0 -0" mesh="jst_xh_3_v3" material="jst_xh_3_v3_material"/>
+      <geom type="mesh" class="collision" pos="0.01235 0.0769884 0.0166" quat="0.707107 0.707107 0 -0" mesh="jst_xh_3_v3" material="jst_xh_3_v3_material"/>
+      <!-- Part fin_course_support_3 -->
+      <geom type="mesh" class="visual" pos="0.0122 0.035 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_course_support" material="fin_course_support_material"/>
+      <geom type="mesh" class="collision" pos="0.0122 0.035 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_course_support" material="fin_course_support_material"/>
+      <!-- Part fin_de_course_3 -->
+      <geom type="mesh" class="visual" pos="0.0122 0.035 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_de_course" material="fin_de_course_material"/>
+      <geom type="mesh" class="collision" pos="0.0122 0.035 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_de_course" material="fin_de_course_material"/>
+      <!-- Part link_chassis_3 -->
+      <geom type="mesh" class="visual" pos="-0.0004 0.0375 0.3236" quat="0.707107 0.707107 0 -0" mesh="link_chassis" material="link_chassis_material"/>
+      <geom type="mesh" class="collision" pos="-0.0004 0.0375 0.3236" quat="0.707107 0.707107 0 -0" mesh="link_chassis" material="link_chassis_material"/>
+      <!-- Part jst_xh_3_v3_3 -->
+      <geom type="mesh" class="visual" pos="0.01235 0.0269884 0.0166" quat="0.707107 0.707107 0 -0" mesh="jst_xh_3_v3" material="jst_xh_3_v3_material"/>
+      <geom type="mesh" class="collision" pos="0.01235 0.0269884 0.0166" quat="0.707107 0.707107 0 -0" mesh="jst_xh_3_v3" material="jst_xh_3_v3_material"/>
+      <!-- Part fin_course_support_4 -->
+      <geom type="mesh" class="visual" pos="0.0122 -0.015 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_course_support" material="fin_course_support_material"/>
+      <geom type="mesh" class="collision" pos="0.0122 -0.015 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_course_support" material="fin_course_support_material"/>
+      <!-- Part fin_de_course_4 -->
+      <geom type="mesh" class="visual" pos="0.0122 -0.015 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_de_course" material="fin_de_course_material"/>
+      <geom type="mesh" class="collision" pos="0.0122 -0.015 0.0151" quat="0.707107 0 0 0.707107" mesh="fin_de_course" material="fin_de_course_material"/>
+      <!-- Part link_chassis_4 -->
+      <geom type="mesh" class="visual" pos="-0.0004 -0.0125 0.3236" quat="0.707107 0.707107 0 -0" mesh="link_chassis" material="link_chassis_material"/>
+      <geom type="mesh" class="collision" pos="-0.0004 -0.0125 0.3236" quat="0.707107 0.707107 0 -0" mesh="link_chassis" material="link_chassis_material"/>
+      <!-- Part jst_xh_3_v3_4 -->
+      <geom type="mesh" class="visual" pos="0.01235 -0.0230116 0.0166" quat="0.707107 0.707107 0 -0" mesh="jst_xh_3_v3" material="jst_xh_3_v3_material"/>
+      <geom type="mesh" class="collision" pos="0.01235 -0.0230116 0.0166" quat="0.707107 0.707107 0 -0" mesh="jst_xh_3_v3" material="jst_xh_3_v3_material"/>
+      <!-- Part nema14_v4_5 -->
+      <geom type="mesh" class="visual" pos="-0.0373 0.0125 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4" material="nema14_v4_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 0.0125 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4" material="nema14_v4_material"/>
+      <!-- Part nema14_v4_6 -->
+      <geom type="mesh" class="visual" pos="-0.0373 0.0125 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__2" material="nema14_v4__2_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 0.0125 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__2" material="nema14_v4__2_material"/>
+      <!-- Part nema14_v4_7 -->
+      <geom type="mesh" class="visual" pos="-0.0373 0.0125 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__3" material="nema14_v4__3_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 0.0125 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__3" material="nema14_v4__3_material"/>
+      <!-- Part nema14_v4_8 -->
+      <geom type="mesh" class="visual" pos="-0.0373 0.0125 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__4" material="nema14_v4__4_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 0.0125 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__4" material="nema14_v4__4_material"/>
+      <!-- Part nema14_v4_9 -->
+      <geom type="mesh" class="visual" pos="-0.0373 -0.0875 0.2956" quat="0.5 0.5 0.5 0.5" mesh="nema14_v4" material="nema14_v4_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 -0.0875 0.2956" quat="0.5 0.5 0.5 0.5" mesh="nema14_v4" material="nema14_v4_material"/>
+      <!-- Part nema14_v4_10 -->
+      <geom type="mesh" class="visual" pos="-0.0373 -0.0875 0.2956" quat="0.5 0.5 0.5 0.5" mesh="nema14_v4__2" material="nema14_v4__2_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 -0.0875 0.2956" quat="0.5 0.5 0.5 0.5" mesh="nema14_v4__2" material="nema14_v4__2_material"/>
+      <!-- Part nema14_v4_11 -->
+      <geom type="mesh" class="visual" pos="-0.0373 -0.0875 0.2956" quat="0.5 0.5 0.5 0.5" mesh="nema14_v4__3" material="nema14_v4__3_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 -0.0875 0.2956" quat="0.5 0.5 0.5 0.5" mesh="nema14_v4__3" material="nema14_v4__3_material"/>
+      <!-- Part nema14_v4_12 -->
+      <geom type="mesh" class="visual" pos="-0.0373 -0.0875 0.2956" quat="0.5 0.5 0.5 0.5" mesh="nema14_v4__4" material="nema14_v4__4_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 -0.0875 0.2956" quat="0.5 0.5 0.5 0.5" mesh="nema14_v4__4" material="nema14_v4__4_material"/>
+      <!-- Part nema14_v4_13 -->
+      <geom type="mesh" class="visual" pos="-0.0373 -0.0375 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4" material="nema14_v4_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 -0.0375 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4" material="nema14_v4_material"/>
+      <!-- Part nema14_v4_14 -->
+      <geom type="mesh" class="visual" pos="-0.0373 -0.0375 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__2" material="nema14_v4__2_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 -0.0375 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__2" material="nema14_v4__2_material"/>
+      <!-- Part nema14_v4_15 -->
+      <geom type="mesh" class="visual" pos="-0.0373 -0.0375 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__3" material="nema14_v4__3_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 -0.0375 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__3" material="nema14_v4__3_material"/>
+      <!-- Part nema14_v4_16 -->
+      <geom type="mesh" class="visual" pos="-0.0373 -0.0375 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__4" material="nema14_v4__4_material"/>
+      <geom type="mesh" class="collision" pos="-0.0373 -0.0375 0.0326" quat="0.5 -0.5 0.5 -0.5" mesh="nema14_v4__4" material="nema14_v4__4_material"/>
+      <!-- Part 300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925 -->
+      <geom type="mesh" class="visual" pos="-0.0014 -0.0625 0.0151" quat="0.707107 0 0.707107 0" mesh="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925" material="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925_material"/>
+      <geom type="mesh" class="collision" pos="-0.0014 -0.0625 0.0151" quat="0.707107 0 0.707107 0" mesh="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925" material="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925_material"/>
+      <!-- Part mgn12h_block -->
+      <geom type="mesh" class="visual" pos="0.0016 -0.0625 0.1065" quat="0.707107 0 0.707107 0" mesh="mgn12h_block" material="mgn12h_block_material"/>
+      <geom type="mesh" class="collision" pos="0.0016 -0.0625 0.1065" quat="0.707107 0 0.707107 0" mesh="mgn12h_block" material="mgn12h_block_material"/>
+      <!-- Part verrain_extension -->
+      <geom type="mesh" class="visual" pos="0.2399 -0.075 0.0833" quat="0 0.707107 -0.707107 -0" mesh="verrain_extension" material="verrain_extension_material"/>
+      <geom type="mesh" class="collision" pos="0.2399 -0.075 0.0833" quat="0 0.707107 -0.707107 -0" mesh="verrain_extension" material="verrain_extension_material"/>
+      <!-- Part slider_holder -->
+      <geom type="mesh" class="visual" pos="0.0728 -0.075 0.084" quat="0.5 0.5 0.5 0.5" mesh="slider_holder" material="slider_holder_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 -0.075 0.084" quat="0.5 0.5 0.5 0.5" mesh="slider_holder" material="slider_holder_material"/>
+      <!-- Part servo_slider -->
+      <geom type="mesh" class="visual" pos="0.0728 -0.075 0.084" quat="0.5 0.5 0.5 0.5" mesh="servo_slider" material="servo_slider_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 -0.075 0.084" quat="0.5 0.5 0.5 0.5" mesh="servo_slider" material="servo_slider_material"/>
+      <!-- Part verrain_holder -->
+      <geom type="mesh" class="visual" pos="0.0728 -0.075 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_holder" material="verrain_holder_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 -0.075 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_holder" material="verrain_holder_material"/>
+      <!-- Part roll_finger -->
+      <geom type="mesh" class="visual" pos="0.2319 -0.075 -0.0121" quat="0 0.707107 -0.707107 0" mesh="roll_finger" material="roll_finger_material"/>
+      <geom type="mesh" class="collision" pos="0.2319 -0.075 -0.0121" quat="0 0.707107 -0.707107 0" mesh="roll_finger" material="roll_finger_material"/>
+      <!-- Part verrain_grip -->
+      <geom type="mesh" class="visual" pos="0.0728 -0.075 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_grip" material="verrain_grip_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 -0.075 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_grip" material="verrain_grip_material"/>
+      <!-- Part roulement -->
+      <geom type="mesh" class="visual" pos="0.2365 -0.075 0.0356" quat="0 -0.707107 0 -0.707107" mesh="roulement" material="roulement_material"/>
+      <geom type="mesh" class="collision" pos="0.2365 -0.075 0.0356" quat="0 -0.707107 0 -0.707107" mesh="roulement" material="roulement_material"/>
+      <!-- Part 17g -->
+      <geom type="mesh" class="visual" pos="0.054208 -0.0538 0.085168" quat="0 0 -1 -0" mesh="17g" material="17g_material"/>
+      <geom type="mesh" class="collision" pos="0.054208 -0.0538 0.085168" quat="0 0 -1 -0" mesh="17g" material="17g_material"/>
+      <!-- Part ressort -->
+      <geom type="mesh" class="visual" pos="0.04165 -0.06025 0.04156" quat="0 -0.707107 -0 0.707107" mesh="ressort" material="ressort_material"/>
+      <geom type="mesh" class="collision" pos="0.04165 -0.06025 0.04156" quat="0 -0.707107 -0 0.707107" mesh="ressort" material="ressort_material"/>
+      <!-- Part finger_end -->
+      <geom type="mesh" class="visual" pos="0.2399 -0.075 0.0833" quat="0.707107 0 0 0.707107" mesh="finger_end" material="finger_end_material"/>
+      <geom type="mesh" class="collision" pos="0.2399 -0.075 0.0833" quat="0.707107 0 0 0.707107" mesh="finger_end" material="finger_end_material"/>
+      <!-- Part spring_holder -->
+      <geom type="mesh" class="visual" pos="0.0728 -0.0752 0.084" quat="0.5 0.5 0.5 0.5" mesh="spring_holder" material="spring_holder_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 -0.0752 0.084" quat="0.5 0.5 0.5 0.5" mesh="spring_holder" material="spring_holder_material"/>
+      <!-- Part homing_bite_2 -->
+      <geom type="mesh" class="visual" pos="0.0116 0.0875 0.0838" quat="0.707107 0 0 0.707107" mesh="homing_bite" material="homing_bite_material"/>
+      <geom type="mesh" class="collision" pos="0.0116 0.0875 0.0838" quat="0.707107 0 0 0.707107" mesh="homing_bite" material="homing_bite_material"/>
+      <!-- Part chariot_2 -->
+      <geom type="mesh" class="visual" pos="0.0116 0.0875 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot" material="chariot_material"/>
+      <geom type="mesh" class="collision" pos="0.0116 0.0875 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot" material="chariot_material"/>
+      <!-- Part chariot_charniere_2 -->
+      <geom type="mesh" class="visual" pos="0.0116 0.0875 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot_charniere" material="chariot_charniere_material"/>
+      <geom type="mesh" class="collision" pos="0.0116 0.0875 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot_charniere" material="chariot_charniere_material"/>
+      <!-- Part spur_gear__14_teeth_2 -->
+      <geom type="mesh" class="visual" pos="0.047158 0.09625 0.069218" quat="0.707107 0.707107 0 -0" mesh="spur_gear__14_teeth" material="spur_gear__14_teeth_material"/>
+      <geom type="mesh" class="collision" pos="0.047158 0.09625 0.069218" quat="0.707107 0.707107 0 -0" mesh="spur_gear__14_teeth" material="spur_gear__14_teeth_material"/>
+      <!-- Part part_1_7 -->
+      <geom type="mesh" class="visual" pos="0.0538346 0.0875 0.1043" quat="0 -0 -0.707107 -0.707107" mesh="part_1__3" material="part_1__3_material"/>
+      <geom type="mesh" class="collision" pos="0.0538346 0.0875 0.1043" quat="0 -0 -0.707107 -0.707107" mesh="part_1__3" material="part_1__3_material"/>
+      <!-- Part homing_bite_3 -->
+      <geom type="mesh" class="visual" pos="0.0116 0.0375 0.0838" quat="0.707107 0 0 0.707107" mesh="homing_bite" material="homing_bite_material"/>
+      <geom type="mesh" class="collision" pos="0.0116 0.0375 0.0838" quat="0.707107 0 0 0.707107" mesh="homing_bite" material="homing_bite_material"/>
+      <!-- Part chariot_3 -->
+      <geom type="mesh" class="visual" pos="0.0116 0.0375 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot" material="chariot_material"/>
+      <geom type="mesh" class="collision" pos="0.0116 0.0375 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot" material="chariot_material"/>
+      <!-- Part chariot_charniere_3 -->
+      <geom type="mesh" class="visual" pos="0.0116 0.0375 0.0838" quat="0.707107 0 -0 0.707107" mesh="chariot_charniere" material="chariot_charniere_material"/>
+      <geom type="mesh" class="collision" pos="0.0116 0.0375 0.0838" quat="0.707107 0 -0 0.707107" mesh="chariot_charniere" material="chariot_charniere_material"/>
+      <!-- Part spur_gear__14_teeth_3 -->
+      <geom type="mesh" class="visual" pos="0.047158 0.04625 0.069218" quat="0.707107 0.707107 0 0" mesh="spur_gear__14_teeth" material="spur_gear__14_teeth_material"/>
+      <geom type="mesh" class="collision" pos="0.047158 0.04625 0.069218" quat="0.707107 0.707107 0 0" mesh="spur_gear__14_teeth" material="spur_gear__14_teeth_material"/>
+      <!-- Part part_1_8 -->
+      <geom type="mesh" class="visual" pos="0.0538346 0.0375 0.1043" quat="0 0 -0.707107 -0.707107" mesh="part_1__3" material="part_1__3_material"/>
+      <geom type="mesh" class="collision" pos="0.0538346 0.0375 0.1043" quat="0 0 -0.707107 -0.707107" mesh="part_1__3" material="part_1__3_material"/>
+      <!-- Part homing_bite_4 -->
+      <geom type="mesh" class="visual" pos="0.0116 -0.0125 0.0838" quat="0.707107 0 0 0.707107" mesh="homing_bite" material="homing_bite_material"/>
+      <geom type="mesh" class="collision" pos="0.0116 -0.0125 0.0838" quat="0.707107 0 0 0.707107" mesh="homing_bite" material="homing_bite_material"/>
+      <!-- Part chariot_4 -->
+      <geom type="mesh" class="visual" pos="0.0116 -0.0125 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot" material="chariot_material"/>
+      <geom type="mesh" class="collision" pos="0.0116 -0.0125 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot" material="chariot_material"/>
+      <!-- Part chariot_charniere_4 -->
+      <geom type="mesh" class="visual" pos="0.0116 -0.0125 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot_charniere" material="chariot_charniere_material"/>
+      <geom type="mesh" class="collision" pos="0.0116 -0.0125 0.0838" quat="0.707107 0 0 0.707107" mesh="chariot_charniere" material="chariot_charniere_material"/>
+      <!-- Part spur_gear__14_teeth_4 -->
+      <geom type="mesh" class="visual" pos="0.047158 -0.00375 0.069218" quat="0.707107 0.707107 0 -0" mesh="spur_gear__14_teeth" material="spur_gear__14_teeth_material"/>
+      <geom type="mesh" class="collision" pos="0.047158 -0.00375 0.069218" quat="0.707107 0.707107 0 -0" mesh="spur_gear__14_teeth" material="spur_gear__14_teeth_material"/>
+      <!-- Part part_1_9 -->
+      <geom type="mesh" class="visual" pos="0.0538346 -0.0125 0.1043" quat="0 0 -0.707107 -0.707107" mesh="part_1__3" material="part_1__3_material"/>
+      <geom type="mesh" class="collision" pos="0.0538346 -0.0125 0.1043" quat="0 0 -0.707107 -0.707107" mesh="part_1__3" material="part_1__3_material"/>
+      <!-- Part sg90 -->
+      <geom type="mesh" class="visual" pos="0.0518 -0.075 0.03035" quat="0.707107 -0 0.707107 0" mesh="sg90" material="sg90_material"/>
+      <geom type="mesh" class="collision" pos="0.0518 -0.075 0.03035" quat="0.707107 -0 0.707107 0" mesh="sg90" material="sg90_material"/>
+      <!-- Part part_1_10 -->
+      <geom type="mesh" class="visual" pos="0.0635 -0.075 0.0833" quat="0 -1 0 0" mesh="part_1__4" material="part_1__4_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 -0.075 0.0833" quat="0 -1 0 0" mesh="part_1__4" material="part_1__4_material"/>
+      <!-- Part part_1_11 -->
+      <geom type="mesh" class="visual" pos="0.0899 -0.075 0.0833" quat="0 -1 0 0" mesh="part_1__5" material="part_1__5_material"/>
+      <geom type="mesh" class="collision" pos="0.0899 -0.075 0.0833" quat="0 -1 0 0" mesh="part_1__5" material="part_1__5_material"/>
+      <!-- Part part_1_12 -->
+      <geom type="mesh" class="visual" pos="0.0835 -0.075 0.0363" quat="0.707107 -0 0 -0.707107" mesh="part_1__6" material="part_1__6_material"/>
+      <geom type="mesh" class="collision" pos="0.0835 -0.075 0.0363" quat="0.707107 -0 0 -0.707107" mesh="part_1__6" material="part_1__6_material"/>
+      <!-- Part 300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925_2 -->
+      <geom type="mesh" class="visual" pos="-0.0014 0.0875 0.0151" quat="0.707107 0 0.707107 0" mesh="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925" material="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925_material"/>
+      <geom type="mesh" class="collision" pos="-0.0014 0.0875 0.0151" quat="0.707107 0 0.707107 0" mesh="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925" material="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925_material"/>
+      <!-- Part mgn12h_block_2 -->
+      <geom type="mesh" class="visual" pos="0.0016 0.0875 0.1065" quat="0.707107 0 0.707107 0" mesh="mgn12h_block" material="mgn12h_block_material"/>
+      <geom type="mesh" class="collision" pos="0.0016 0.0875 0.1065" quat="0.707107 0 0.707107 0" mesh="mgn12h_block" material="mgn12h_block_material"/>
+      <!-- Part verrain_extension_2 -->
+      <geom type="mesh" class="visual" pos="0.2399 0.075 0.0833" quat="0 0.707107 -0.707107 -0" mesh="verrain_extension" material="verrain_extension_material"/>
+      <geom type="mesh" class="collision" pos="0.2399 0.075 0.0833" quat="0 0.707107 -0.707107 -0" mesh="verrain_extension" material="verrain_extension_material"/>
+      <!-- Part slider_holder_2 -->
+      <geom type="mesh" class="visual" pos="0.0728 0.075 0.084" quat="0.5 0.5 0.5 0.5" mesh="slider_holder" material="slider_holder_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 0.075 0.084" quat="0.5 0.5 0.5 0.5" mesh="slider_holder" material="slider_holder_material"/>
+      <!-- Part servo_slider_2 -->
+      <geom type="mesh" class="visual" pos="0.0728 0.075 0.084" quat="0.5 0.5 0.5 0.5" mesh="servo_slider" material="servo_slider_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 0.075 0.084" quat="0.5 0.5 0.5 0.5" mesh="servo_slider" material="servo_slider_material"/>
+      <!-- Part verrain_holder_2 -->
+      <geom type="mesh" class="visual" pos="0.0728 0.075 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_holder" material="verrain_holder_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 0.075 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_holder" material="verrain_holder_material"/>
+      <!-- Part roll_finger_2 -->
+      <geom type="mesh" class="visual" pos="0.2319 0.075 -0.0121" quat="0 0.707107 -0.707107 0" mesh="roll_finger" material="roll_finger_material"/>
+      <geom type="mesh" class="collision" pos="0.2319 0.075 -0.0121" quat="0 0.707107 -0.707107 0" mesh="roll_finger" material="roll_finger_material"/>
+      <!-- Part verrain_grip_2 -->
+      <geom type="mesh" class="visual" pos="0.0728 0.075 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_grip" material="verrain_grip_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 0.075 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_grip" material="verrain_grip_material"/>
+      <!-- Part roulement_2 -->
+      <geom type="mesh" class="visual" pos="0.2365 0.075 0.0356" quat="0 -0.707107 -0 -0.707107" mesh="roulement" material="roulement_material"/>
+      <geom type="mesh" class="collision" pos="0.2365 0.075 0.0356" quat="0 -0.707107 -0 -0.707107" mesh="roulement" material="roulement_material"/>
+      <!-- Part 17g_2 -->
+      <geom type="mesh" class="visual" pos="0.054208 0.0962 0.085168" quat="0 -0 -1 -0" mesh="17g" material="17g_material"/>
+      <geom type="mesh" class="collision" pos="0.054208 0.0962 0.085168" quat="0 -0 -1 -0" mesh="17g" material="17g_material"/>
+      <!-- Part ressort_2 -->
+      <geom type="mesh" class="visual" pos="0.04165 0.08975 0.04156" quat="0 -0.707107 -0 0.707107" mesh="ressort" material="ressort_material"/>
+      <geom type="mesh" class="collision" pos="0.04165 0.08975 0.04156" quat="0 -0.707107 -0 0.707107" mesh="ressort" material="ressort_material"/>
+      <!-- Part finger_end_2 -->
+      <geom type="mesh" class="visual" pos="0.2399 0.075 0.0833" quat="0.707107 0 0 0.707107" mesh="finger_end" material="finger_end_material"/>
+      <geom type="mesh" class="collision" pos="0.2399 0.075 0.0833" quat="0.707107 0 0 0.707107" mesh="finger_end" material="finger_end_material"/>
+      <!-- Part spring_holder_2 -->
+      <geom type="mesh" class="visual" pos="0.0728 0.0748 0.084" quat="0.5 0.5 0.5 0.5" mesh="spring_holder" material="spring_holder_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 0.0748 0.084" quat="0.5 0.5 0.5 0.5" mesh="spring_holder" material="spring_holder_material"/>
+      <!-- Part 300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925_3 -->
+      <geom type="mesh" class="visual" pos="-0.0014 0.0375 0.0151" quat="0.707107 0 0.707107 0" mesh="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925" material="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925_material"/>
+      <geom type="mesh" class="collision" pos="-0.0014 0.0375 0.0151" quat="0.707107 0 0.707107 0" mesh="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925" material="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925_material"/>
+      <!-- Part mgn12h_block_3 -->
+      <geom type="mesh" class="visual" pos="0.0016 0.0375 0.1065" quat="0.707107 0 0.707107 0" mesh="mgn12h_block" material="mgn12h_block_material"/>
+      <geom type="mesh" class="collision" pos="0.0016 0.0375 0.1065" quat="0.707107 0 0.707107 0" mesh="mgn12h_block" material="mgn12h_block_material"/>
+      <!-- Part verrain_extension_3 -->
+      <geom type="mesh" class="visual" pos="0.2399 0.025 0.0833" quat="0 0.707107 -0.707107 -0" mesh="verrain_extension" material="verrain_extension_material"/>
+      <geom type="mesh" class="collision" pos="0.2399 0.025 0.0833" quat="0 0.707107 -0.707107 -0" mesh="verrain_extension" material="verrain_extension_material"/>
+      <!-- Part slider_holder_3 -->
+      <geom type="mesh" class="visual" pos="0.0728 0.025 0.084" quat="0.5 0.5 0.5 0.5" mesh="slider_holder" material="slider_holder_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 0.025 0.084" quat="0.5 0.5 0.5 0.5" mesh="slider_holder" material="slider_holder_material"/>
+      <!-- Part servo_slider_3 -->
+      <geom type="mesh" class="visual" pos="0.0728 0.025 0.084" quat="0.5 0.5 0.5 0.5" mesh="servo_slider" material="servo_slider_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 0.025 0.084" quat="0.5 0.5 0.5 0.5" mesh="servo_slider" material="servo_slider_material"/>
+      <!-- Part verrain_holder_3 -->
+      <geom type="mesh" class="visual" pos="0.0728 0.025 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_holder" material="verrain_holder_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 0.025 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_holder" material="verrain_holder_material"/>
+      <!-- Part roll_finger_3 -->
+      <geom type="mesh" class="visual" pos="0.2319 0.025 -0.0121" quat="0 0.707107 -0.707107 0" mesh="roll_finger" material="roll_finger_material"/>
+      <geom type="mesh" class="collision" pos="0.2319 0.025 -0.0121" quat="0 0.707107 -0.707107 0" mesh="roll_finger" material="roll_finger_material"/>
+      <!-- Part verrain_grip_3 -->
+      <geom type="mesh" class="visual" pos="0.0728 0.025 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_grip" material="verrain_grip_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 0.025 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_grip" material="verrain_grip_material"/>
+      <!-- Part roulement_3 -->
+      <geom type="mesh" class="visual" pos="0.2365 0.025 0.0356" quat="0 -0.707107 -0 -0.707107" mesh="roulement" material="roulement_material"/>
+      <geom type="mesh" class="collision" pos="0.2365 0.025 0.0356" quat="0 -0.707107 -0 -0.707107" mesh="roulement" material="roulement_material"/>
+      <!-- Part 17g_3 -->
+      <geom type="mesh" class="visual" pos="0.054208 0.0462 0.085168" quat="0 0 -1 -0" mesh="17g" material="17g_material"/>
+      <geom type="mesh" class="collision" pos="0.054208 0.0462 0.085168" quat="0 0 -1 -0" mesh="17g" material="17g_material"/>
+      <!-- Part ressort_3 -->
+      <geom type="mesh" class="visual" pos="0.04165 0.03975 0.04156" quat="0 0.707107 0 -0.707107" mesh="ressort" material="ressort_material"/>
+      <geom type="mesh" class="collision" pos="0.04165 0.03975 0.04156" quat="0 0.707107 0 -0.707107" mesh="ressort" material="ressort_material"/>
+      <!-- Part finger_end_3 -->
+      <geom type="mesh" class="visual" pos="0.2399 0.025 0.0833" quat="0.707107 0 0 0.707107" mesh="finger_end" material="finger_end_material"/>
+      <geom type="mesh" class="collision" pos="0.2399 0.025 0.0833" quat="0.707107 0 0 0.707107" mesh="finger_end" material="finger_end_material"/>
+      <!-- Part spring_holder_3 -->
+      <geom type="mesh" class="visual" pos="0.0728 0.0248 0.084" quat="0.5 0.5 0.5 0.5" mesh="spring_holder" material="spring_holder_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 0.0248 0.084" quat="0.5 0.5 0.5 0.5" mesh="spring_holder" material="spring_holder_material"/>
+      <!-- Part 300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925_4 -->
+      <geom type="mesh" class="visual" pos="-0.0014 -0.0125 0.0151" quat="0.707107 0 0.707107 0" mesh="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925" material="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925_material"/>
+      <geom type="mesh" class="collision" pos="-0.0014 -0.0125 0.0151" quat="0.707107 0 0.707107 0" mesh="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925" material="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925_material"/>
+      <!-- Part mgn12h_block_4 -->
+      <geom type="mesh" class="visual" pos="0.0016 -0.0125 0.1065" quat="0.707107 0 0.707107 0" mesh="mgn12h_block" material="mgn12h_block_material"/>
+      <geom type="mesh" class="collision" pos="0.0016 -0.0125 0.1065" quat="0.707107 0 0.707107 0" mesh="mgn12h_block" material="mgn12h_block_material"/>
+      <!-- Part verrain_extension_4 -->
+      <geom type="mesh" class="visual" pos="0.2399 -0.025 0.0833" quat="0 0.707107 -0.707107 0" mesh="verrain_extension" material="verrain_extension_material"/>
+      <geom type="mesh" class="collision" pos="0.2399 -0.025 0.0833" quat="0 0.707107 -0.707107 0" mesh="verrain_extension" material="verrain_extension_material"/>
+      <!-- Part slider_holder_4 -->
+      <geom type="mesh" class="visual" pos="0.0728 -0.025 0.084" quat="0.5 0.5 0.5 0.5" mesh="slider_holder" material="slider_holder_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 -0.025 0.084" quat="0.5 0.5 0.5 0.5" mesh="slider_holder" material="slider_holder_material"/>
+      <!-- Part servo_slider_4 -->
+      <geom type="mesh" class="visual" pos="0.0728 -0.025 0.084" quat="0.5 0.5 0.5 0.5" mesh="servo_slider" material="servo_slider_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 -0.025 0.084" quat="0.5 0.5 0.5 0.5" mesh="servo_slider" material="servo_slider_material"/>
+      <!-- Part verrain_holder_4 -->
+      <geom type="mesh" class="visual" pos="0.0728 -0.025 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_holder" material="verrain_holder_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 -0.025 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_holder" material="verrain_holder_material"/>
+      <!-- Part roll_finger_4 -->
+      <geom type="mesh" class="visual" pos="0.2319 -0.025 -0.0121" quat="0 -0.707107 0.707107 0" mesh="roll_finger" material="roll_finger_material"/>
+      <geom type="mesh" class="collision" pos="0.2319 -0.025 -0.0121" quat="0 -0.707107 0.707107 0" mesh="roll_finger" material="roll_finger_material"/>
+      <!-- Part verrain_grip_4 -->
+      <geom type="mesh" class="visual" pos="0.0728 -0.025 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_grip" material="verrain_grip_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 -0.025 0.0833" quat="0.5 0.5 0.5 0.5" mesh="verrain_grip" material="verrain_grip_material"/>
+      <!-- Part roulement_4 -->
+      <geom type="mesh" class="visual" pos="0.2365 -0.025 0.0356" quat="0 0.707107 0 0.707107" mesh="roulement" material="roulement_material"/>
+      <geom type="mesh" class="collision" pos="0.2365 -0.025 0.0356" quat="0 0.707107 0 0.707107" mesh="roulement" material="roulement_material"/>
+      <!-- Part 17g_4 -->
+      <geom type="mesh" class="visual" pos="0.054208 -0.0038 0.085168" quat="0 -0 -1 0" mesh="17g" material="17g_material"/>
+      <geom type="mesh" class="collision" pos="0.054208 -0.0038 0.085168" quat="0 -0 -1 0" mesh="17g" material="17g_material"/>
+      <!-- Part ressort_4 -->
+      <geom type="mesh" class="visual" pos="0.04165 -0.01025 0.04156" quat="0 0.707107 -0 -0.707107" mesh="ressort" material="ressort_material"/>
+      <geom type="mesh" class="collision" pos="0.04165 -0.01025 0.04156" quat="0 0.707107 -0 -0.707107" mesh="ressort" material="ressort_material"/>
+      <!-- Part finger_end_4 -->
+      <geom type="mesh" class="visual" pos="0.2399 -0.025 0.0833" quat="0.707107 -0 0 0.707107" mesh="finger_end" material="finger_end_material"/>
+      <geom type="mesh" class="collision" pos="0.2399 -0.025 0.0833" quat="0.707107 -0 0 0.707107" mesh="finger_end" material="finger_end_material"/>
+      <!-- Part spring_holder_4 -->
+      <geom type="mesh" class="visual" pos="0.0728 -0.0252 0.084" quat="0.5 0.5 0.5 0.5" mesh="spring_holder" material="spring_holder_material"/>
+      <geom type="mesh" class="collision" pos="0.0728 -0.0252 0.084" quat="0.5 0.5 0.5 0.5" mesh="spring_holder" material="spring_holder_material"/>
+      <!-- Part sg90_2 -->
+      <geom type="mesh" class="visual" pos="0.0518 0.075 0.03035" quat="0.707107 0 0.707107 0" mesh="sg90" material="sg90_material"/>
+      <geom type="mesh" class="collision" pos="0.0518 0.075 0.03035" quat="0.707107 0 0.707107 0" mesh="sg90" material="sg90_material"/>
+      <!-- Part part_1_13 -->
+      <geom type="mesh" class="visual" pos="0.0635 0.075 0.0833" quat="0 -1 0 0" mesh="part_1__4" material="part_1__4_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 0.075 0.0833" quat="0 -1 0 0" mesh="part_1__4" material="part_1__4_material"/>
+      <!-- Part part_1_14 -->
+      <geom type="mesh" class="visual" pos="0.0899 0.075 0.0833" quat="0 -1 0 0" mesh="part_1__5" material="part_1__5_material"/>
+      <geom type="mesh" class="collision" pos="0.0899 0.075 0.0833" quat="0 -1 0 0" mesh="part_1__5" material="part_1__5_material"/>
+      <!-- Part part_1_15 -->
+      <geom type="mesh" class="visual" pos="0.0835 0.075 0.0363" quat="0.707107 -0 0 -0.707107" mesh="part_1__6" material="part_1__6_material"/>
+      <geom type="mesh" class="collision" pos="0.0835 0.075 0.0363" quat="0.707107 -0 0 -0.707107" mesh="part_1__6" material="part_1__6_material"/>
+      <!-- Part sg90_3 -->
+      <geom type="mesh" class="visual" pos="0.0518 0.025 0.03035" quat="0.707107 -0 0.707107 0" mesh="sg90" material="sg90_material"/>
+      <geom type="mesh" class="collision" pos="0.0518 0.025 0.03035" quat="0.707107 -0 0.707107 0" mesh="sg90" material="sg90_material"/>
+      <!-- Part part_1_16 -->
+      <geom type="mesh" class="visual" pos="0.0635 0.025 0.0833" quat="0 -1 -0 0" mesh="part_1__4" material="part_1__4_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 0.025 0.0833" quat="0 -1 -0 0" mesh="part_1__4" material="part_1__4_material"/>
+      <!-- Part part_1_17 -->
+      <geom type="mesh" class="visual" pos="0.0899 0.025 0.0833" quat="0 -1 -0 0" mesh="part_1__5" material="part_1__5_material"/>
+      <geom type="mesh" class="collision" pos="0.0899 0.025 0.0833" quat="0 -1 -0 0" mesh="part_1__5" material="part_1__5_material"/>
+      <!-- Part part_1_18 -->
+      <geom type="mesh" class="visual" pos="0.0835 0.025 0.0363" quat="0.707107 -0 0 -0.707107" mesh="part_1__6" material="part_1__6_material"/>
+      <geom type="mesh" class="collision" pos="0.0835 0.025 0.0363" quat="0.707107 -0 0 -0.707107" mesh="part_1__6" material="part_1__6_material"/>
+      <!-- Part sg90_4 -->
+      <geom type="mesh" class="visual" pos="0.0518 -0.025 0.03035" quat="0.707107 -0 0.707107 -0" mesh="sg90" material="sg90_material"/>
+      <geom type="mesh" class="collision" pos="0.0518 -0.025 0.03035" quat="0.707107 -0 0.707107 -0" mesh="sg90" material="sg90_material"/>
+      <!-- Part part_1_19 -->
+      <geom type="mesh" class="visual" pos="0.0635 -0.025 0.0833" quat="0 -1 0 0" mesh="part_1__4" material="part_1__4_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 -0.025 0.0833" quat="0 -1 0 0" mesh="part_1__4" material="part_1__4_material"/>
+      <!-- Part part_1_20 -->
+      <geom type="mesh" class="visual" pos="0.0899 -0.025 0.0833" quat="0 1 -0 -0" mesh="part_1__5" material="part_1__5_material"/>
+      <geom type="mesh" class="collision" pos="0.0899 -0.025 0.0833" quat="0 1 -0 -0" mesh="part_1__5" material="part_1__5_material"/>
+      <!-- Part part_1_21 -->
+      <geom type="mesh" class="visual" pos="0.0835 -0.025 0.0363" quat="0.707107 -0 -0 -0.707107" mesh="part_1__6" material="part_1__6_material"/>
+      <geom type="mesh" class="collision" pos="0.0835 -0.025 0.0363" quat="0.707107 -0 -0 -0.707107" mesh="part_1__6" material="part_1__6_material"/>
+      <!-- Link montage_moyeu -->
+      <body name="montage_moyeu" pos="0 0.1572 0.0366" quat="0 0 -0.707107 0.707107">
+        <!-- Joint from base_metal to montage_moyeu -->
+        <joint axis="0 0 1" name="left_wheel"/>
+        <inertial pos="-2.85976e-07 1.70289e-05 -0.0174083" mass="0.0914168" fullinertia="3.25984e-05 3.25081e-05 5.69302e-05 -9.44e-10 1.68e-10 -2.3812e-08"/>
+        <!-- Part enjoliver -->
+        <geom type="mesh" class="visual" pos="-0 0 -0.0058" quat="0 1 0 0" mesh="enjoliver" material="enjoliver_material"/>
+        <geom type="mesh" class="collision" pos="-0 0 -0.0058" quat="0 1 0 0" mesh="enjoliver" material="enjoliver_material"/>
+        <!-- Part moyeu -->
+        <geom type="mesh" class="visual" pos="0 0 -0.0058" quat="0 1 0 0" mesh="moyeu" material="moyeu_material"/>
+        <geom type="mesh" class="collision" pos="0 0 -0.0058" quat="0 1 0 0" mesh="moyeu" material="moyeu_material"/>
+        <!-- Part wheel_2_7_8__od_0_8__width__banebots_t81p_29 -->
+        <geom type="mesh" class="visual" pos="-0 0 -0.0063" quat="0 1 0 0" mesh="wheel_2_7_8__od_0_8__width__banebots_t81p_29" material="wheel_2_7_8__od_0_8__width__banebots_t81p_29_material"/>
+        <geom type="mesh" class="collision" pos="-0 0 -0.0063" quat="0 1 0 0" mesh="wheel_2_7_8__od_0_8__width__banebots_t81p_29" material="wheel_2_7_8__od_0_8__width__banebots_t81p_29_material"/>
+      </body>
+      <!-- Link montage_moyeu_2 -->
+      <body name="montage_moyeu_2" pos="-0 -0.1572 0.0366" quat="0.707107 -0.707107 -0 -0">
+        <!-- Joint from base_metal to montage_moyeu_2 -->
+        <joint axis="0 0 1" name="right_wheel"/>
+        <inertial pos="-2.85976e-07 1.70289e-05 -0.0174083" mass="0.0914168" fullinertia="3.25984e-05 3.25081e-05 5.69302e-05 -9.44e-10 1.68e-10 -2.3812e-08"/>
+        <!-- Part enjoliver_2 -->
+        <geom type="mesh" class="visual" pos="-0 0 -0.0058" quat="0 1 -0 0" mesh="enjoliver" material="enjoliver_material"/>
+        <geom type="mesh" class="collision" pos="-0 0 -0.0058" quat="0 1 -0 0" mesh="enjoliver" material="enjoliver_material"/>
+        <!-- Part moyeu_2 -->
+        <geom type="mesh" class="visual" pos="0 0 -0.0058" quat="0 1 0 0" mesh="moyeu" material="moyeu_material"/>
+        <geom type="mesh" class="collision" pos="0 0 -0.0058" quat="0 1 0 0" mesh="moyeu" material="moyeu_material"/>
+        <!-- Part wheel_2_7_8__od_0_8__width__banebots_t81p_29_2 -->
+        <geom type="mesh" class="visual" pos="-0 0 -0.0063" quat="0 -1 0 -0" mesh="wheel_2_7_8__od_0_8__width__banebots_t81p_29" material="wheel_2_7_8__od_0_8__width__banebots_t81p_29_material"/>
+        <geom type="mesh" class="collision" pos="-0 0 -0.0063" quat="0 -1 0 -0" mesh="wheel_2_7_8__od_0_8__width__banebots_t81p_29" material="wheel_2_7_8__od_0_8__width__banebots_t81p_29_material"/>
+      </body>
+    </body>
+  </worldbody>
+  <asset>
+    <mesh file="slider_holder.stl"/>
+    <mesh file="servo_slider.stl"/>
+    <mesh file="speaker.stl"/>
+    <mesh file="balise_tete.stl"/>
+    <mesh file="panneau_actio_top.stl"/>
+    <mesh file="cache_cable__2.stl"/>
+    <mesh file="top_pannel.stl"/>
+    <mesh file="fin_course_support.stl"/>
+    <mesh file="profile1515x150.stl"/>
+    <mesh file="moyeu.stl"/>
+    <mesh file="profile1515x325.stl"/>
+    <mesh file="elec_panel.stl"/>
+    <mesh file="roll_finger.stl"/>
+    <mesh file="profile1515x320.stl"/>
+    <mesh file="part_1__4.stl"/>
+    <mesh file="marqueur_aruco.stl"/>
+    <mesh file="nema14_v4__4.stl"/>
+    <mesh file="filtre.stl"/>
+    <mesh file="spring_holder.stl"/>
+    <mesh file="homing_bite.stl"/>
+    <mesh file="part_1__6.stl"/>
+    <mesh file="equerre_droite.stl"/>
+    <mesh file="jst_xh_3_v3.stl"/>
+    <mesh file="nema17_motor_ax.stl"/>
+    <mesh file="17g.stl"/>
+    <mesh file="poulie_moteur.stl"/>
+    <mesh file="equerre_droite__2.stl"/>
+    <mesh file="batterie_holder.stl"/>
+    <mesh file="equerre_arriere_gauche__2.stl"/>
+    <mesh file="parkside_pap_20_b3.stl"/>
+    <mesh file="part_1__5.stl"/>
+    <mesh file="profile1515x195.stl"/>
+    <mesh file="rail_lineaire_haut.stl"/>
+    <mesh file="nema14_v4.stl"/>
+    <mesh file="verrain_extension.stl"/>
+    <mesh file="chariot.stl"/>
+    <mesh file="cache_cable.stl"/>
+    <mesh file="equerre_gauche__4.stl"/>
+    <mesh file="side_pannel__2.stl"/>
+    <mesh file="rail_linéaire_haut.stl"/>
+    <mesh file="equerre_arriere_gauche.stl"/>
+    <mesh file="ecran_screen.stl"/>
+    <mesh file="support_filtre.stl"/>
+    <mesh file="panneau_actio_bas.stl"/>
+    <mesh file="wheel_2_7_8__od_0_8__width__banebots_t81p_29.stl"/>
+    <mesh file="equerre_arriere_droit.stl"/>
+    <mesh file="chariot_charniere.stl"/>
+    <mesh file="link_chassis.stl"/>
+    <mesh file="mks.stl"/>
+    <mesh file="equerre_arriere_droit__2.stl"/>
+    <mesh file="verrain_holder.stl"/>
+    <mesh file="mgn12h_block.stl"/>
+    <mesh file="roulement.stl"/>
+    <mesh file="finger_end.stl"/>
+    <mesh file="patin.stl"/>
+    <mesh file="equerre_gauche__2.stl"/>
+    <mesh file="enjoliver.stl"/>
+    <mesh file="sg90.stl"/>
+    <mesh file="balise_pied.stl"/>
+    <mesh file="equerre_droite__3.stl"/>
+    <mesh file="equerre_droite__4.stl"/>
+    <mesh file="verrain_grip.stl"/>
+    <mesh file="part_1.stl"/>
+    <mesh file="part_1__3.stl"/>
+    <mesh file="batterie_holder_attach.stl"/>
+    <mesh file="fin_de_course.stl"/>
+    <mesh file="base_metal.stl"/>
+    <mesh file="ressort.stl"/>
+    <mesh file="equerre_gauche.stl"/>
+    <mesh file="part_1__2.stl"/>
+    <mesh file="spur_gear__14_teeth.stl"/>
+    <mesh file="motor_support.stl"/>
+    <mesh file="tweater.stl"/>
+    <mesh file="equerre_gauche__3.stl"/>
+    <mesh file="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925.stl"/>
+    <mesh file="nema14_v4__2.stl"/>
+    <mesh file="nema14_v4__3.stl"/>
+    <mesh file="side_pannel.stl"/>
+    <mesh file="nema17_motor.stl"/>
+    <mesh file="back_pannel.stl"/>
+    <mesh file="ecran_attache.stl"/>
+    <mesh file="cache_cable_2.stl"/>
+    <material name="patin_material" rgba="0.6 0.6 0.6 1"/>
+    <material name="speaker_material" rgba="0.917647 0.917647 0.917647 1"/>
+    <material name="profile1515x320_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="ecran_attache_material" rgba="0.231373 0.380392 0.705882 1"/>
+    <material name="base_metal_material" rgba="0.8 0.8 0.8 1"/>
+    <material name="equerre_arriere_gauche_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="tweater_material" rgba="0.188235 0.188235 0.188235 1"/>
+    <material name="marqueur_aruco_material" rgba="0.231373 0.380392 0.705882 1"/>
+    <material name="profile1515x150_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="equerre_droite_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="ecran_screen_material" rgba="0.647059 0.647059 0.647059 1"/>
+    <material name="back_pannel_material" rgba="0.615686 0.811765 0.929412 0.298039"/>
+    <material name="equerre_gauche_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="profile1515x325_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="equerre_arriere_gauche__2_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="elec_panel_material" rgba="0.0784314 0.0784314 0.0784314 0.227451"/>
+    <material name="equerre_arriere_droit_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="top_pannel_material" rgba="0.156863 0.156863 0.156863 1"/>
+    <material name="equerre_gauche__2_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="profile1515x195_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="equerre_droite__2_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="equerre_arriere_droit__2_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="side_pannel_material" rgba="0.0784314 0.0784314 0.0784314 1"/>
+    <material name="side_pannel__2_material" rgba="0.0784314 0.0784314 0.0784314 1"/>
+    <material name="panneau_actio_top_material" rgba="0.8 0.8 0.8 1"/>
+    <material name="equerre_droite__3_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="cache_cable_material" rgba="0.498039 0.498039 0.498039 1"/>
+    <material name="rail_lineaire_haut_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="equerre_gauche__3_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="part_1_material" rgba="0.8 0.8 0.8 1"/>
+    <material name="cache_cable__2_material" rgba="0.498039 0.498039 0.498039 1"/>
+    <material name="cache_cable_2_material" rgba="0.647059 0.647059 0.647059 1"/>
+    <material name="rail_linéaire_haut_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="poulie_moteur_material" rgba="0.8 0.8 0.8 1"/>
+    <material name="equerre_droite__4_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="equerre_gauche__4_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="panneau_actio_bas_material" rgba="0.8 0.8 0.8 1"/>
+    <material name="motor_support_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="mks_material" rgba="0.439216 0.47451 0.501961 1"/>
+    <material name="support_filtre_material" rgba="0.223529 0.223529 0.223529 1"/>
+    <material name="filtre_material" rgba="0.784314 0 0 1"/>
+    <material name="part_1__2_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="balise_tete_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="balise_pied_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="batterie_holder_attach_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="parkside_pap_20_b3_material" rgba="0.501961 0.501961 0.501961 1"/>
+    <material name="batterie_holder_material" rgba="1 0 0 1"/>
+    <material name="fin_course_support_material" rgba="0.647059 0.647059 0.647059 1"/>
+    <material name="fin_de_course_material" rgba="0.196078 0.196078 0.196078 1"/>
+    <material name="link_chassis_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="jst_xh_3_v3_material" rgba="0.964706 0.964706 0.952941 1"/>
+    <material name="nema14_v4_material" rgba="0.960784 0.960784 0.964706 1"/>
+    <material name="nema14_v4__2_material" rgba="0.964706 0.964706 0.952941 1"/>
+    <material name="nema14_v4__3_material" rgba="0.964706 0.964706 0.952941 1"/>
+    <material name="nema14_v4__4_material" rgba="0.34902 0.34902 0.34902 1"/>
+    <material name="nema17_motor_ax_material" rgba="0.647059 0.647059 0.647059 1"/>
+    <material name="nema17_motor_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="homing_bite_material" rgba="0.917647 0.917647 0.917647 1"/>
+    <material name="chariot_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="chariot_charniere_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="spur_gear__14_teeth_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="part_1__3_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="300mm_mgn12_linear_rail__c009d806c273ccf58b59f28ff853e925_material" rgba="0.498039 0.498039 0.498039 1"/>
+    <material name="mgn12h_block_material" rgba="0.231373 0.380392 0.705882 1"/>
+    <material name="verrain_extension_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="slider_holder_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="servo_slider_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="verrain_holder_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="roll_finger_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="verrain_grip_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="roulement_material" rgba="0.8 0.8 0.8 1"/>
+    <material name="17g_material" rgba="0.262745 0.282353 0.301961 1"/>
+    <material name="ressort_material" rgba="0.8 0.8 0.8 1"/>
+    <material name="finger_end_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="spring_holder_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="sg90_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="part_1__4_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="part_1__5_material" rgba="0.615686 0.811765 0.929412 1"/>
+    <material name="part_1__6_material" rgba="0.866667 0.909804 1 1"/>
+    <material name="enjoliver_material" rgba="0.301961 0.301961 0.301961 1"/>
+    <material name="moyeu_material" rgba="0.4 0.4 0.4 1"/>
+    <material name="wheel_2_7_8__od_0_8__width__banebots_t81p_29_material" rgba="0.498039 0.498039 0.498039 1"/>
+  </asset>
+  <actuator>
+    <position class="robot" name="left_wheel" joint="left_wheel"/>
+    <position class="robot" name="right_wheel" joint="right_wheel"/>
+  </actuator>
+  <equality/>
+</mujoco>

@@ -2,13 +2,13 @@
 <!-- Generated using onshape-to-robot -->
 <!-- Onshape https://cad.onshape.com/documents/8d500074879bff2fe5a61001/w/6163b81f90eef0506777baa4/e/bc758656a7863107bd669bf1 -->
 <mujoco model="table">
-  <compiler angle="radian" autolimits="true"/>
+  <compiler angle="radian" meshdir="assets" autolimits="true"/>
   <default>
     <default class="table">
       <joint frictionloss="0.1" armature="0.005"/>
       <position kp="50" dampratio="1"/>
       <default class="visual">
-        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>*
       </default>
       <default class="collision">
         <geom group="3"/>

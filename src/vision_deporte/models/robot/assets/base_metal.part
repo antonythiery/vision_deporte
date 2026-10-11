@@ -1,0 +1,13 @@
+{
+    "configuration": "default",
+    "documentId": "0284a40034354dbe74c82a48",
+    "documentMicroversion": "ba50f24f43385817c6fd7879",
+    "elementId": "597d3238e33248bad8026aa1",
+    "fullConfiguration": "default",
+    "id": "MFfLxSf2coNjbnrTk",
+    "isStandardContent": false,
+    "name": "base_metal <1>",
+    "partId": "JHD",
+    "suppressed": false,
+    "type": "Part"
+}

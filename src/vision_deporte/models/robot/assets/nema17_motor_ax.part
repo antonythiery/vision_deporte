@@ -1,0 +1,14 @@
+{
+    "configuration": "default",
+    "documentId": "7e0039ec8f8f5803df64a415",
+    "documentMicroversion": "ad0023088dac1177ccc1684d",
+    "documentVersion": "909dfb1d6a9194f52f927c86",
+    "elementId": "a1adaf900533108d57f4a0ab",
+    "fullConfiguration": "default",
+    "id": "M2a7BPt+uKDuf6sSV",
+    "isStandardContent": false,
+    "name": "NEMA17-motor_ax <1>",
+    "partId": "JiD",
+    "suppressed": false,
+    "type": "Part"
+}

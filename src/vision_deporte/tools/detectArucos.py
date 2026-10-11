@@ -14,11 +14,12 @@ arucoTable = np.array([
     [-50.0, -50.0, 0.0]
 ])
 
+arucoRobotcote = 78 #mm
 arucoRobot = np.array([
-    [-35.0, 35.0, 0.0], 
-    [35.0, 35.0, 0.0], 
-    [35.0, -35.0, 0.0], 
-    [-35.0, -35.0, 0.0]
+    [-arucoRobotcote/2, arucoRobotcote/2, 0.0], 
+    [arucoRobotcote/2, arucoRobotcote/2, 0.0], 
+    [arucoRobotcote/2, -arucoRobotcote/2, 0.0], 
+    [-arucoRobotcote/2, -arucoRobotcote/2, 0.0]
 ])
 
 arucoDirectory = {

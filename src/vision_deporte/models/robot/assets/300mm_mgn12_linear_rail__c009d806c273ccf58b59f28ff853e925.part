@@ -1,0 +1,14 @@
+{
+    "configuration": "Hole_Offset=0.011+meter;Length=0.3+meter;List_ScmKAidjkm6sl4=MGN12",
+    "documentId": "7281f7f53de3b45a02f2da6d",
+    "documentMicroversion": "1af8f3c15e144cda7fd0e603",
+    "documentVersion": "17e0c5d84fefdab5a3f60afb",
+    "elementId": "2dc9da0f33c7b7baa72b2363",
+    "fullConfiguration": "Hole_Offset=0.011+meter;Length=0.3+meter;List_ScmKAidjkm6sl4=MGN12",
+    "id": "MMIW54HOiSMh/Rry+",
+    "isStandardContent": false,
+    "name": "300mm MGN12 Linear Rail <2>",
+    "partId": "JHD",
+    "suppressed": false,
+    "type": "Part"
+}

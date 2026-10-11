@@ -33,7 +33,7 @@ images = [
 ]
 
 cameraParams = np.load("src/vision_deporte/tools/cameraParams.npz")
-detectorBasedeporte = detectArucos(images[3], cameraParams)
+detectorBasedeporte = detectArucos(images[5], cameraParams)
 
 detection1 = detectorBasedeporte.detect()
 
@@ -70,10 +70,14 @@ arucoIdtoObjectId = {
     "2" : mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"arucoRobot1"),
 }
 idCam = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"cam")
-idTable = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"table_sans_bordure")
+idTable = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"table_table_sans_bordure")
+idRobot = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"robot_base_metal")
+print(f"idCam : {idCam}, idTable : {idTable}, idRobot : {idRobot}")
 
+posRobot = np.array([0.0, 0.0, 0.0])
 posTable = np.array([0.0, 0.0, 0.0])
 qposTable = np.array([0.0, 0.0, 0.0, 0.0])
+posArucoRobot = [0.002, 0.0, 0.4504]
 posArucoTable = {
     "20" : [-0.9, -0.5, 0.0],
     "21" : [0.9, -0.5, 0.0],
@@ -94,11 +98,13 @@ for k in range(len(detection1)):
 
     model.body_pos[idObject] = T_world_cam @ posArucoCam + posCam
     model.body_quat[idObject] = qposAruco
-    
+
     if(20<=idAruco<=23):
         nbArucoTableDetected += 1
         posTable += model.body_pos[idObject] - posArucoTable[str(idAruco)]
         allQuatsTable.append(model.body_quat[idObject])
+    elif(idAruco==2):
+        posRobot = model.body_pos[idObject] - posArucoRobot
 
 posTable /= nbArucoTableDetected
 allRotTable = Rotation.from_quat(allQuatsTable, scalar_first=True)
@@ -107,6 +113,8 @@ R_table = Rotation.from_quat(qposTable, scalar_first=True)
 qposTable = (R_table * Rz).as_quat(scalar_first=True) 
 model.body_pos[idTable] = posTable
 model.body_quat[idTable] = qposTable
+
+model.body_pos[idRobot] = posRobot
 
 model.body_pos[idCam] = posCam
 
