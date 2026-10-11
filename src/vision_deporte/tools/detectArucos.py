@@ -62,7 +62,6 @@ class detectArucos:
 
     def detect(self):
         detection_corners, self.detected_ids, _ = self.arucoDetector.detectMarkers(self.image)
-        print(f"detection_ids : {self.detected_ids}")
         self.detected_corners = np.array(detection_corners).reshape(-1, 4, 2)
 
         for k in range(len(self.detected_ids)):

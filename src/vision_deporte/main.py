@@ -20,13 +20,7 @@ T_world_cam = np.array([
     [-0.16611423, -0.44400773, -0.88049032]
 ])
 
-
-Rz = np.array([
-    [np.cos(np.pi/2), np.sin(np.pi/2), 0],
-    [-np.sin(np.pi/2),  np.cos(np.pi/2), 0],
-    [0,                0,               1]
-])
-
+Rz = Rotation.from_euler('z', -np.pi/2)
 
 ## detect arucos irl
 
@@ -80,33 +74,34 @@ idTable = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"table_sans_bordure"
 posTable = np.array([0.0, 0.0, 0.0])
 qposTable = np.array([0.0, 0.0, 0.0, 0.0])
 posArucoTable = {
-    "20" : [0.5, -0.9, 0.0],
-    "21" : [0.5, 0.9, 0.0],
-    "22" : [1.4, -0.9, 0.0],
-    "23" : [1.4, 0.9, 0.0]    
- } # positon du centre des arucos sur la table ordre (repère STK) [m]
+    "20" : [-0.9, -0.5, 0.0],
+    "21" : [0.9, -0.5, 0.0],
+    "22" : [-0.9, -1.4, 0.0],
+    "23" : [0.9, -1.4, 0.0]    
+} # positon du centre des arucos sur la table ordre (repère STK) [m]
 nbArucoTableDetected = 0
+allQuatsTable = []
 
 for k in range(len(detection1)):
     idAruco = detectorBasedeporte.detected_ids[k]
     posAruco = detection1[k]
     posAruco = np.array(posAruco[1:]).reshape(2, 3)
     R = cv2.Rodrigues(posAruco[0])[0]
-    qposAruco = Rotation.from_matrix(T_world_cam @ R @ Rz).as_quat(scalar_first=True)
+    qposAruco = Rotation.from_matrix(T_world_cam @ R).as_quat(scalar_first=True)
     posArucoCam = posAruco[1] / 1000.0
-    model.body_pos[idArucoTable[k]] = T_world_cam @ posArucoCam @ Rz + posCam
-
+    model.body_pos[idArucoTable[k]] = T_world_cam @ posArucoCam + posCam
     model.body_quat[idArucoTable[k]] = qposAruco
 
     if(20<=idAruco<=23):
         nbArucoTableDetected += 1
         posTable += model.body_pos[idArucoTable[k]] - posArucoTable[str(idAruco)]
-        qposTable += model.body_quat[idArucoTable[k]]
-        print(f"posTable : {posTable}")
+        allQuatsTable.append(model.body_quat[idArucoTable[k]])
 
 posTable /= nbArucoTableDetected
-qposTable /= nbArucoTableDetected
-print(f"posTablefinal : {posTable}")
+allRotTable = Rotation.from_quat(allQuatsTable, scalar_first=True)
+qposTable = allRotTable.mean().as_quat(scalar_first=True)
+R_table = Rotation.from_quat(qposTable, scalar_first=True)
+qposTable = (R_table * Rz).as_quat(scalar_first=True) 
 model.body_pos[idTable] = posTable
 model.body_quat[idTable] = qposTable
 
@@ -118,12 +113,12 @@ mujoco.mj_forward(model, data)
 manager = plt.get_current_fig_manager()
 manager.window.setGeometry(0, 0, 960, 1080)
 
+# viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
 try :
     while viewer.is_running():
         mujoco.mj_step(model, data)
         viewer.sync()
         time.sleep(model.opt.timestep)
-
         plt.show()
 except KeyboardInterrupt: 
     pass
