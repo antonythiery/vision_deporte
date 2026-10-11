@@ -12,6 +12,7 @@ from pathlib import Path
 
 from tools.createScene import build_xml
 from tools.detectArucos import detectArucos
+from tools.utils import mean_robust
 
 posCam = [-0.1, -0.5, 1.8]
 T_world_cam = np.array([
@@ -42,7 +43,7 @@ images = [
 ]
 
 cameraParams = np.load("src/vision_deporte/tools/cameraParams.npz")
-detectorBasedeporte = detectArucos(images[3], cameraParams)
+detectorBasedeporte = detectArucos(images[7], cameraParams)
 
 detection1 = detectorBasedeporte.detect()
 
@@ -81,7 +82,6 @@ arucoIdtoObjectId = {
 idCam = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"cam")
 idTable = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"table_table_sans_bordure")
 idRobot = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"robot_base_metal")
-print(f"idCam : {idCam}, idTable : {idTable}, idRobot : {idRobot}")
 
 posRobot = np.array([0.0, 0.0, 0.0])
 posTable = np.array([0.0, 0.0, 0.0])
@@ -115,7 +115,7 @@ for k in range(len(detection1)):
 if(nbArucoTableDetected!=0):
     posTable /= nbArucoTableDetected
     allRotTable = Rotation.from_quat(allQuatsTable, scalar_first=True)
-    qposTable = allRotTable.mean().as_quat(scalar_first=True)
+    qposTable = mean_robust(allRotTable).as_quat(scalar_first=True)
     R_table = Rotation.from_quat(qposTable, scalar_first=True)
     qposTable = (R_table * Rzn).as_quat(scalar_first=True) 
     model.body_pos[idTable] = posTable
