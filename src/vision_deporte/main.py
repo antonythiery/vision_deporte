@@ -20,7 +20,16 @@ T_world_cam = np.array([
     [-0.16611423, -0.44400773, -0.88049032]
 ])
 
-Rz = Rotation.from_euler('z', -np.pi/2)
+posArucoRobot = [0.014, -0.005, 0.4504]
+posArucoTable = {
+    "20" : [-0.9, -0.5, 0.0],
+    "21" : [0.9, -0.5, 0.0],
+    "22" : [-0.9, -1.4, 0.0],
+    "23" : [0.9, -1.4, 0.0]    
+} # positon du centre des arucos sur la table ordre (repère STK) [m]
+
+Rzn = Rotation.from_euler('z', -np.pi/2)
+Rzp = Rotation.from_euler('z', np.pi/2)
 
 ## detect arucos irl
 
@@ -33,7 +42,7 @@ images = [
 ]
 
 cameraParams = np.load("src/vision_deporte/tools/cameraParams.npz")
-detectorBasedeporte = detectArucos(images[5], cameraParams)
+detectorBasedeporte = detectArucos(images[3], cameraParams)
 
 detection1 = detectorBasedeporte.detect()
 
@@ -77,14 +86,9 @@ print(f"idCam : {idCam}, idTable : {idTable}, idRobot : {idRobot}")
 posRobot = np.array([0.0, 0.0, 0.0])
 posTable = np.array([0.0, 0.0, 0.0])
 qposTable = np.array([0.0, 0.0, 0.0, 0.0])
-posArucoRobot = [0.002, 0.0, 0.4504]
-posArucoTable = {
-    "20" : [-0.9, -0.5, 0.0],
-    "21" : [0.9, -0.5, 0.0],
-    "22" : [-0.9, -1.4, 0.0],
-    "23" : [0.9, -1.4, 0.0]    
-} # positon du centre des arucos sur la table ordre (repère STK) [m]
+
 nbArucoTableDetected = 0
+robotDetected = 0
 allQuatsTable = []
 
 for k in range(len(detection1)):
@@ -104,17 +108,23 @@ for k in range(len(detection1)):
         posTable += model.body_pos[idObject] - posArucoTable[str(idAruco)]
         allQuatsTable.append(model.body_quat[idObject])
     elif(idAruco==2):
+        robotDetected = 1
         posRobot = model.body_pos[idObject] - posArucoRobot
+        qposRobot = model.body_quat[idObject]
 
-posTable /= nbArucoTableDetected
-allRotTable = Rotation.from_quat(allQuatsTable, scalar_first=True)
-qposTable = allRotTable.mean().as_quat(scalar_first=True)
-R_table = Rotation.from_quat(qposTable, scalar_first=True)
-qposTable = (R_table * Rz).as_quat(scalar_first=True) 
-model.body_pos[idTable] = posTable
-model.body_quat[idTable] = qposTable
-
-model.body_pos[idRobot] = posRobot
+if(nbArucoTableDetected!=0):
+    posTable /= nbArucoTableDetected
+    allRotTable = Rotation.from_quat(allQuatsTable, scalar_first=True)
+    qposTable = allRotTable.mean().as_quat(scalar_first=True)
+    R_table = Rotation.from_quat(qposTable, scalar_first=True)
+    qposTable = (R_table * Rzn).as_quat(scalar_first=True) 
+    model.body_pos[idTable] = posTable
+    model.body_quat[idTable] = qposTable
+if(robotDetected!=0):
+    R_Robot = Rotation.from_quat(qposRobot, scalar_first=True)
+    qposRobot = (R_Robot * Rzp).as_quat(scalar_first=True)
+    model.body_pos[idRobot] = posRobot
+    model.body_quat[idRobot] = qposRobot
 
 model.body_pos[idCam] = posCam
 
