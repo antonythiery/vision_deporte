@@ -15,13 +15,19 @@ from tools.detectArucos import detectArucos
 from tools.utils import mean_robust
 
 posCam = [-0.1, -0.5, 1.8]
-T_world_cam = np.array([
+T_world_cam_old = np.array([
     [-0.98464269, 0.02605037, 0.17262722],
     [-0.05371072, 0.89564419, -0.4415163 ],
     [-0.16611423, -0.44400773, -0.88049032]
 ])
 
-posArucoRobot = [0.014, -0.005, 0.4504]
+T_world_cam = np.array([
+    [-0.97677887,  0.0699096 , -0.2025233 ],
+    [ 0.17033678,  0.82675706, -0.53615123],
+    [ 0.12995545, -0.55819836, -0.81946701]
+])
+
+posArucoRobot = [0.04, 0.06, 0.4504]
 posArucoTable = {
     "20" : [-0.9, -0.5, 0.0],
     "21" : [0.9, -0.5, 0.0],
@@ -34,7 +40,7 @@ Rzp = Rotation.from_euler('z', np.pi/2)
 
 ## detect arucos irl
 
-image_dir = "datas/calibration_images"
+image_dir = "datas/exemple_images"
 
 images = [
     os.path.join(image_dir, f)
@@ -43,7 +49,7 @@ images = [
 ]
 
 cameraParams = np.load("src/vision_deporte/tools/cameraParams.npz")
-detectorBasedeporte = detectArucos(images[7], cameraParams)
+detectorBasedeporte = detectArucos(images[10], cameraParams)
 
 detection1 = detectorBasedeporte.detect()
 
@@ -122,7 +128,7 @@ if(nbArucoTableDetected!=0):
     model.body_quat[idTable] = qposTable
 if(robotDetected!=0):
     R_Robot = Rotation.from_quat(qposRobot, scalar_first=True)
-    qposRobot = (R_Robot * Rzp).as_quat(scalar_first=True)
+    qposRobot = (R_Robot ).as_quat(scalar_first=True)
     model.body_pos[idRobot] = posRobot
     model.body_quat[idRobot] = qposRobot
 

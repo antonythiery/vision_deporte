@@ -8,5 +8,4 @@ def mean_robust(rotations: Rotation, max_var= 0.5):
         if diff[k]<max_var:
             rotations_cleaned.append(Rotation.as_matrix(rotations[k]))
     newM = Rotation.from_matrix(rotations_cleaned).mean()
-    print(f"newM : {newM}")
     return newM
