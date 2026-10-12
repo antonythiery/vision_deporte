@@ -14,7 +14,7 @@ arucoTable = np.array([
     [-50.0, -50.0, 0.0]
 ])
 
-arucoRobotcote = 78 #mm
+arucoRobotcote = 70 #mm
 arucoRobot = np.array([
     [-arucoRobotcote/2, arucoRobotcote/2, 0.0], 
     [arucoRobotcote/2, arucoRobotcote/2, 0.0], 
@@ -48,17 +48,19 @@ class detectArucos:
 
     def changeImage(self, image):
         self.imagePath = image
-        self.image = cv2.imread(image)
+        self.image = plt.imread(image)
+        self.image = np.rot90(self.image, 2)
         self.detectedArucos = []
 
     def showImage(self):
+        plt.clf()
         for k in range(len(self.detected_corners)):
             corners_closed = np.vstack([self.detected_corners[k], self.detected_corners[k, 0]])
             plt.plot( 
                 corners_closed[:, 0], corners_closed[:, 1], "r-"
             )
             plt.text(corners_closed[0, 0]-20, corners_closed[0, 1]-20, str(self.detected_ids[k]))
-            
+
         plt.imshow(self.image)
 
     def detect(self):

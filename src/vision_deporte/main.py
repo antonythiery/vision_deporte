@@ -14,6 +14,7 @@ from tools.createScene import build_xml
 from tools.detectArucos import detectArucos
 from tools.utils import mean_robust
 
+imageId = 27
 posCam = [-0.1, -0.5, 1.8]
 T_world_cam_old = np.array([
     [-0.98464269, 0.02605037, 0.17262722],
@@ -38,23 +39,6 @@ posArucoTable = {
 Rzn = Rotation.from_euler('z', -np.pi/2)
 Rzp = Rotation.from_euler('z', np.pi/2)
 
-## detect arucos irl
-
-image_dir = "datas/exemple_images"
-
-images = [
-    os.path.join(image_dir, f)
-    for f in os.listdir(image_dir)
-    if f.endswith(".png") or f.endswith(".jpg")
-]
-
-cameraParams = np.load("src/vision_deporte/tools/cameraParams.npz")
-detectorBasedeporte = detectArucos(images[10], cameraParams)
-
-detection1 = detectorBasedeporte.detect()
-
-detectorBasedeporte.showImage()
-
 ## setup 3D env
 
 
@@ -75,6 +59,22 @@ viewer = mujoco.viewer.launch_passive(
     show_right_ui=False,
 )
 
+## detect arucos irl
+
+image_dir = "datas/exemple_images"
+
+images = [
+    os.path.join(image_dir, f)
+    for f in os.listdir(image_dir)
+    if f.endswith(".png") or f.endswith(".jpg")
+]
+
+cameraParams = np.load("src/vision_deporte/tools/cameraParams.npz")
+
+detectorBasedeporte = detectArucos(images[imageId], cameraParams)
+detection = detectorBasedeporte.detect()
+detectorBasedeporte.showImage()
+
 ## runtime
 
 arucoIdtoObjectId = {
@@ -89,56 +89,75 @@ idCam = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"cam")
 idTable = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"table_table_sans_bordure")
 idRobot = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"robot_base_metal")
 
-posRobot = np.array([0.0, 0.0, 0.0])
-posTable = np.array([0.0, 0.0, 0.0])
-qposTable = np.array([0.0, 0.0, 0.0, 0.0])
-
-nbArucoTableDetected = 0
-robotDetected = 0
-allQuatsTable = []
-
-for k in range(len(detection1)):
-    idAruco = detectorBasedeporte.detected_ids[k]
-    idObject = arucoIdtoObjectId[str(idAruco)]
-    posAruco = detection1[k]
-    posAruco = np.array(posAruco[1:]).reshape(2, 3)
-    R = cv2.Rodrigues(posAruco[0])[0]
-    qposAruco = Rotation.from_matrix(T_world_cam @ R).as_quat(scalar_first=True)
-    posArucoCam = posAruco[1] / 1000.0
-
-    model.body_pos[idObject] = T_world_cam @ posArucoCam + posCam
-    model.body_quat[idObject] = qposAruco
-
-    if(20<=idAruco<=23):
-        nbArucoTableDetected += 1
-        posTable += model.body_pos[idObject] - posArucoTable[str(idAruco)]
-        allQuatsTable.append(model.body_quat[idObject])
-    elif(idAruco==2):
-        robotDetected = 1
-        posRobot = model.body_pos[idObject] - posArucoRobot
-        qposRobot = model.body_quat[idObject]
-
-if(nbArucoTableDetected!=0):
-    posTable /= nbArucoTableDetected
-    allRotTable = Rotation.from_quat(allQuatsTable, scalar_first=True)
-    qposTable = mean_robust(allRotTable).as_quat(scalar_first=True)
-    R_table = Rotation.from_quat(qposTable, scalar_first=True)
-    qposTable = (R_table * Rzn).as_quat(scalar_first=True) 
-    model.body_pos[idTable] = posTable
-    model.body_quat[idTable] = qposTable
-if(robotDetected!=0):
-    R_Robot = Rotation.from_quat(qposRobot, scalar_first=True)
-    qposRobot = (R_Robot ).as_quat(scalar_first=True)
-    model.body_pos[idRobot] = posRobot
-    model.body_quat[idRobot] = qposRobot
-
 model.body_pos[idCam] = posCam
 
-mujoco.mj_forward(model, data)
+def detectToMujoco(detection):
+    posRobot = np.array([0.0, 0.0, 0.0])
+    posTable = np.array([0.0, 0.0, 0.0])
+    qposTable = np.array([0.0, 0.0, 0.0, 0.0])
+    nbArucoTableDetected = 0
+    robotDetected = 0
+    allQuatsTable = []
 
+    for k in range(len(detection)):
+        idAruco = detectorBasedeporte.detected_ids[k]
+        idObject = arucoIdtoObjectId[str(idAruco)]
+        posAruco = detection[k]
+        posAruco = np.array(posAruco[1:]).reshape(2, 3)
+        R = cv2.Rodrigues(posAruco[0])[0]
+        qposAruco = Rotation.from_matrix(T_world_cam @ R).as_quat(scalar_first=True)
+        posArucoCam = posAruco[1] / 1000.0
+
+        model.body_pos[idObject] = T_world_cam @ posArucoCam + posCam
+        model.body_quat[idObject] = qposAruco
+
+        if(20<=idAruco<=23):
+            nbArucoTableDetected += 1
+            posTable += model.body_pos[idObject] - posArucoTable[str(idAruco)]
+            allQuatsTable.append(model.body_quat[idObject])
+        elif(idAruco==2):
+            robotDetected = 1
+            posRobot = model.body_pos[idObject] - posArucoRobot
+            qposRobot = model.body_quat[idObject]
+
+    if(nbArucoTableDetected!=0):
+        posTable /= nbArucoTableDetected
+        allRotTable = Rotation.from_quat(allQuatsTable, scalar_first=True)
+        qposTable = mean_robust(allRotTable).as_quat(scalar_first=True)
+        R_table = Rotation.from_quat(qposTable, scalar_first=True)
+        qposTable = (R_table * Rzn).as_quat(scalar_first=True) 
+        model.body_pos[idTable] = posTable
+        model.body_quat[idTable] = qposTable
+    if(robotDetected!=0):
+        R_Robot = Rotation.from_quat(qposRobot, scalar_first=True)
+        qposRobot = (R_Robot ).as_quat(scalar_first=True)
+        model.body_pos[idRobot] = posRobot
+        model.body_quat[idRobot] = qposRobot
+
+    mujoco.mj_forward(model, data)
+
+detectToMujoco(detection)
+
+fig = plt.gcf()
+def on_key(event):
+    global imageId
+    if(event.key=="right" or event.key=="left"):
+        if(event.key=="right"):
+            imageId+=1
+        else:
+            imageId-=1
+        imageId = imageId % (len(images))
+        print(imageId)
+        detectorBasedeporte.changeImage(images[imageId])
+        detection = detectorBasedeporte.detect()
+        detectorBasedeporte.showImage()
+        fig.canvas.draw_idle()
+        detectToMujoco(detection)
 
 manager = plt.get_current_fig_manager()
 manager.window.setGeometry(0, 0, 960, 1080)
+fig.canvas.mpl_connect("key_press_event", on_key)
+plt.show(block=False)
 
 # viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
 try :
@@ -146,8 +165,9 @@ try :
         mujoco.mj_step(model, data)
         viewer.sync()
         time.sleep(model.opt.timestep)
-        plt.show()
+        fig.canvas.flush_events()
 except KeyboardInterrupt: 
     pass
 finally :
     viewer.close()
+    plt.close("all")
