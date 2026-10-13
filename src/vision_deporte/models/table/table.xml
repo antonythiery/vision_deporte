@@ -11,7 +11,7 @@
         <geom type="mesh" contype="0" conaffinity="0" group="2"/>*
       </default>
       <default class="collision">
-        <geom group="3"/>
+        <geom group="3" contype="2" conaffinity="2"/>
       </default>
     </default>
   </default>

@@ -14,24 +14,16 @@ from tools.createScene import build_xml
 from tools.detectArucos import detectArucos
 from tools.utils import mean_robust
 
-imageId = 8
+imageId = 7
 posCam = [-0.1, -0.5, 1.8]
-T_world_cam_old = np.array([
-    [-0.98464269, 0.02605037, 0.17262722],
-    [-0.05371072, 0.89564419, -0.4415163 ],
-    [-0.16611423, -0.44400773, -0.88049032]
-])
 
-T_world_cam = np.array([
+T_world_cam_default = np.array([
     [-0.97677887,  0.0699096 , -0.2025233 ],
     [ 0.17033678,  0.82675706, -0.53615123],
     [ 0.12995545, -0.55819836, -0.81946701]
 ])
 
-T_world_cam_test = np.linalg.inv(np.array([[ 0.99265529, -0.04410247,  0.11265185],
- [-0.10848916,  0.08751822,  0.99023768],
- [-0.05353102, -0.99518618,  0.08209078]]))
-
+idArucoRobot = 2
 posArucoTable = {
     "20" : [-0.9, -0.6, 0.0],
     "21" : [0.9, -0.6, 0.0],
@@ -105,9 +97,21 @@ def detectToMujoco(detection, detected_ids):
     allArucosTable = []
     allPosTable = []
     allQuatsTable = []
+    T_world_cam = T_world_cam_default
+
+    model.body_pos[idRobot] = posRobot
+
+    if (idArucoRobot in detected_ids):
+        print("robot trouvé") 
+        print(np.where(detected_ids==idArucoRobot)[0])
+        # model.body_pos[idRobot] = posRobot
+        # model.body_quat[idRobot] = qposRobot
+        # model.body_pos[idObject] = T_world_cam @ posArucoCam + posCam
+        # model.body_quat[idObject] = qposAruco
 
     for k in range(len(detection)):
         idAruco = detected_ids[k]
+        print(f"idAruco : {detected_ids}")
         idObject = arucoIdtoObjectId[str(idAruco)]
         posAruco = detection[k]
         posAruco = np.array(posAruco[1:]).reshape(2, 3)
@@ -117,17 +121,16 @@ def detectToMujoco(detection, detected_ids):
 
         model.body_pos[idObject] = T_world_cam @ posArucoCam + posCam
         model.body_quat[idObject] = qposAruco
-
-        if(20<=idAruco<=23):
+        if(idAruco==idArucoRobot):
+            robotDetected = 1
+            qposRobot = model.body_quat[idObject]
+            posRobot = model.body_pos[idObject] - Rotation.from_quat(qposRobot, scalar_first=True).apply(posArucoRobot)
+        elif(20<=idAruco<=23):
             nbArucoTableDetected += 1
             allArucosTable.append(idAruco)
             allPosTable.append(model.body_pos[idObject].copy())
             allQuatsTable.append(model.body_quat[idObject].copy())
-        elif(idAruco==2):
-            robotDetected = 1
-            qposRobot = model.body_quat[idObject]
-            posRobot = model.body_pos[idObject] - Rotation.from_quat(qposRobot, scalar_first=True).apply(posArucoRobot) 
-
+        
     if(nbArucoTableDetected!=0):
         allRotTable = Rotation.from_quat(allQuatsTable, scalar_first=True)
         qposTable, posTable = mean_robust(allRotTable, allPosTable, allArucosTable)
@@ -139,8 +142,8 @@ def detectToMujoco(detection, detected_ids):
     if(robotDetected!=0):
         R_Robot = Rotation.from_quat(qposRobot, scalar_first=True)
         qposRobot = (R_Robot ).as_quat(scalar_first=True)
-        model.body_pos[idRobot] = posRobot
-        model.body_quat[idRobot] = qposRobot
+        # model.body_pos[idRobot] = posRobot
+        # model.body_quat[idRobot] = qposRobot
 
     mujoco.mj_forward(model, data)
 
@@ -167,7 +170,7 @@ manager.window.setGeometry(0, 0, 960, 1080)
 fig.canvas.mpl_connect("key_press_event", on_key)
 plt.show(block=False)
 
-viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
+# viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
 try :
     while viewer.is_running():
         mujoco.mj_step(model, data)

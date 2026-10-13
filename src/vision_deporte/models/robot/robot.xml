@@ -18,7 +18,7 @@
   <worldbody>
     <!-- Link base_metal -->
     <body name="base_metal" pos="0 0 0" quat="1 0 0 0" childclass="robot">
-      <!-- <freejoint name="base_metal_freejoint"/> -->
+      <freejoint name="base_metal_freejoint"/>
       <inertial pos="-0.00241454 0.0031061 0.159341" mass="6.27597" fullinertia="0.166381 0.13902 0.0641414 -0.000179912 -0.000790348 0.00130904"/>
       <!-- Part patin -->
       <geom type="mesh" class="visual" pos="0.0635 -0.145 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
@@ -798,8 +798,8 @@
     <material name="wheel_2_7_8__od_0_8__width__banebots_t81p_29_material" rgba="0.498039 0.498039 0.498039 1"/>
   </asset>
   <actuator>
-    <position class="robot" name="left_wheel" joint="left_wheel"/>
-    <position class="robot" name="right_wheel" joint="right_wheel"/>
+    <velocity class="robot" name="left_wheel" joint="left_wheel" kv="0.5" ctrlrange="-60 60"/>
+    <velocity class="robot" name="right_wheel" joint="right_wheel" kv="0.5" ctrlrange="-60 60"/>
   </actuator>
   <equality/>
 </mujoco>
