@@ -29,9 +29,10 @@ T_world_cam = np.array([
 ])
 
 posArucoRobot = [0.002, 0.0, 0.4504]
+
 posArucoTable = {
-    "20" : [-0.9, -0.5, 0.0],
-    "21" : [0.9, -0.5, 0.0],
+    "20" : [-0.9, -0.6, 0.0],
+    "21" : [0.9, -0.6, 0.0],
     "22" : [-0.9, -1.4, 0.0],
     "23" : [0.9, -1.4, 0.0]    
 } # positon du centre des arucos sur la table ordre (repère STK) [m]
@@ -141,7 +142,7 @@ detectToMujoco([(True, np.array([[ 0.0],
        [ 0.0],
        [0.0]]), np.array([[0.0],
        [ 0.0],
-       [0.0]]))], [20])
+       [1000.0]]))], [21])
 
 fig = plt.gcf()
 def on_key(event):
