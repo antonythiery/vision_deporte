@@ -103,8 +103,9 @@ def detectToMujoco(detection, detected_ids):
 
     if (idArucoRobot in detected_ids):
         idObject = arucoIdtoObjectId[str(idArucoRobot)]
+        idDetectionRobot = np.where(detected_ids==idArucoRobot)[0][0]
         print("robot trouvé") 
-        pos_ArucoRobot_Cam = detection[np.where(detected_ids==idArucoRobot)[0][0]]
+        pos_ArucoRobot_Cam = detection[idDetectionRobot]
         pos_ArucoRobot_Cam = np.array(pos_ArucoRobot_Cam[1:]).reshape(2, 3)
         R_cam_arucoRobot = Rotation.from_rotvec(pos_ArucoRobot_Cam[0])
 
@@ -125,25 +126,26 @@ def detectToMujoco(detection, detected_ids):
         model.body_quat[idCam] = qposCam
 
         for k in range(len(detection)):
-            idAruco = detected_ids[k]
-            idObject = arucoIdtoObjectId[str(idAruco)]
-            posAruco = detection[k]
-            posAruco = np.array(posAruco[1:]).reshape(2, 3)
-            R = cv2.Rodrigues(posAruco[0])[0]
-            qposAruco = Rotation.from_matrix(T_world_cam @ R).as_quat(scalar_first=True)
-            posArucoCam = posAruco[1] / 1000.0
+            if(detected_ids[k]!=idArucoRobot):
+                R_cam_arucoRobot = Rotation.from_rotvec(pos_ArucoRobot_Cam[0])
+        
+                idAruco = detected_ids[k]
+                idObject = arucoIdtoObjectId[str(idAruco)]
+                posAruco = detection[k]
+                posAruco = np.array(posAruco[1:]).reshape(2, 3)
+                R_cam_aruco = Rotation.from_rotvec(posAruco[0])
+                R_world_aruco = R_world_cam * R_cam_aruco
 
-            # model.body_pos[idObject] = T_world_cam @ posArucoCam + posCam
-            # model.body_quat[idObject] = qposAruco
-            if(idAruco==idArucoRobot):
-                robotDetected = 1
-                qposRobot = model.body_quat[idObject]
-                posRobot = model.body_pos[idObject] - Rotation.from_quat(qposRobot, scalar_first=True).apply(posArucoOnRobot)
-            elif(20<=idAruco<=23):
-                nbArucoTableDetected += 1
-                allArucosTable.append(idAruco)
-                allPosTable.append(model.body_pos[idObject].copy())
-                allQuatsTable.append(model.body_quat[idObject].copy())
+                qposAruco =  R_world_aruco.as_quat(scalar_first=True)
+                posAruco = R_world_cam.apply(posAruco[1] / 1000.0) + posCam
+
+                model.body_pos[idObject] = posAruco
+                model.body_quat[idObject] = qposAruco
+                if(20<=idAruco<=23):
+                    nbArucoTableDetected += 1
+                    allArucosTable.append(idAruco)
+                    allPosTable.append(model.body_pos[idObject].copy())
+                    allQuatsTable.append(model.body_quat[idObject].copy())
         
     if(nbArucoTableDetected!=0):
         allRotTable = Rotation.from_quat(allQuatsTable, scalar_first=True)
