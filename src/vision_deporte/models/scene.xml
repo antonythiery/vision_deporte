@@ -30,7 +30,7 @@
         <frame>
             <attach model="table" body="table_sans_bordure" prefix="table_"/>
         </frame>
-        <frame pos="0 0 0">
+        <frame pos="1.5 1 0">
             <attach model="robot" body="base_metal" prefix="robot_"/>
         </frame>
     </worldbody>

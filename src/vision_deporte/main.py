@@ -31,7 +31,7 @@ posArucoTable = {
     "23" : [0.9, -1.4, 0.0]    
 } # positon du centre des arucos sur la table ordre (repère STK) [m]
 
-posArucoRobot = [0.002, 0.0, 0.4504]
+posArucoOnRobot = [0.002, 0.0, 0.4504]
 
 Rzn = Rotation.from_euler('z', -np.pi/2)
 Rzp = Rotation.from_euler('z', np.pi/2)
@@ -102,34 +102,48 @@ def detectToMujoco(detection, detected_ids):
     model.body_pos[idRobot] = posRobot
 
     if (idArucoRobot in detected_ids):
+        idObject = arucoIdtoObjectId[str(idArucoRobot)]
         print("robot trouvé") 
-        print(np.where(detected_ids==idArucoRobot)[0])
-        # model.body_pos[idRobot] = posRobot
-        # model.body_quat[idRobot] = qposRobot
-        # model.body_pos[idObject] = T_world_cam @ posArucoCam + posCam
-        # model.body_quat[idObject] = qposAruco
+        pos_ArucoRobot_Cam = detection[np.where(detected_ids==idArucoRobot)[0][0]]
+        pos_ArucoRobot_Cam = np.array(pos_ArucoRobot_Cam[1:]).reshape(2, 3)
+        R_cam_arucoRobot = Rotation.from_rotvec(pos_ArucoRobot_Cam[0])
 
-    for k in range(len(detection)):
-        idAruco = detected_ids[k]
-        print(f"idAruco : {detected_ids}")
-        idObject = arucoIdtoObjectId[str(idAruco)]
-        posAruco = detection[k]
-        posAruco = np.array(posAruco[1:]).reshape(2, 3)
-        R = cv2.Rodrigues(posAruco[0])[0]
-        qposAruco = Rotation.from_matrix(T_world_cam @ R).as_quat(scalar_first=True)
-        posArucoCam = posAruco[1] / 1000.0
+        posRobot = data.xpos[idRobot].copy()
+        qposRobot = data.xquat[idRobot].copy()
+        R_world_robot = Rotation.from_quat(qposRobot, scalar_first=True)
 
-        model.body_pos[idObject] = T_world_cam @ posArucoCam + posCam
-        model.body_quat[idObject] = qposAruco
-        if(idAruco==idArucoRobot):
-            robotDetected = 1
-            qposRobot = model.body_quat[idObject]
-            posRobot = model.body_pos[idObject] - Rotation.from_quat(qposRobot, scalar_first=True).apply(posArucoRobot)
-        elif(20<=idAruco<=23):
-            nbArucoTableDetected += 1
-            allArucosTable.append(idAruco)
-            allPosTable.append(model.body_pos[idObject].copy())
-            allQuatsTable.append(model.body_quat[idObject].copy())
+        qposArucoRobot = qposRobot
+        posArucoRobot = posRobot + R_world_robot.apply(posArucoOnRobot)
+        model.body_pos[idObject] = posArucoRobot
+        model.body_quat[idObject] = qposArucoRobot
+        
+        R_world_cam = R_world_robot * R_cam_arucoRobot.inv()
+        qposCam = R_world_cam.as_quat(scalar_first=True)
+        posCam = posArucoRobot - R_world_cam.apply(pos_ArucoRobot_Cam[1]/1000)
+        
+        model.body_pos[idCam] = posCam
+        model.body_quat[idCam] = qposCam
+
+        for k in range(len(detection)):
+            idAruco = detected_ids[k]
+            idObject = arucoIdtoObjectId[str(idAruco)]
+            posAruco = detection[k]
+            posAruco = np.array(posAruco[1:]).reshape(2, 3)
+            R = cv2.Rodrigues(posAruco[0])[0]
+            qposAruco = Rotation.from_matrix(T_world_cam @ R).as_quat(scalar_first=True)
+            posArucoCam = posAruco[1] / 1000.0
+
+            # model.body_pos[idObject] = T_world_cam @ posArucoCam + posCam
+            # model.body_quat[idObject] = qposAruco
+            if(idAruco==idArucoRobot):
+                robotDetected = 1
+                qposRobot = model.body_quat[idObject]
+                posRobot = model.body_pos[idObject] - Rotation.from_quat(qposRobot, scalar_first=True).apply(posArucoOnRobot)
+            elif(20<=idAruco<=23):
+                nbArucoTableDetected += 1
+                allArucosTable.append(idAruco)
+                allPosTable.append(model.body_pos[idObject].copy())
+                allQuatsTable.append(model.body_quat[idObject].copy())
         
     if(nbArucoTableDetected!=0):
         allRotTable = Rotation.from_quat(allQuatsTable, scalar_first=True)
@@ -170,7 +184,7 @@ manager.window.setGeometry(0, 0, 960, 1080)
 fig.canvas.mpl_connect("key_press_event", on_key)
 plt.show(block=False)
 
-# viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
+viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
 try :
     while viewer.is_running():
         mujoco.mj_step(model, data)
