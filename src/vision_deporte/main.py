@@ -28,7 +28,7 @@ T_world_cam = np.array([
     [ 0.12995545, -0.55819836, -0.81946701]
 ])
 
-posArucoRobot = [0.04, 0.06, 0.4504]
+posArucoRobot = [0.002, 0.0, 0.4504]
 posArucoTable = {
     "20" : [-0.9, -0.5, 0.0],
     "21" : [0.9, -0.5, 0.0],
@@ -91,7 +91,8 @@ idRobot = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY,"robot_base_metal")
 
 model.body_pos[idCam] = posCam
 
-def detectToMujoco(detection):
+def detectToMujoco(detection, detected_ids):
+    print(detection, detected_ids)
     posRobot = np.array([0.0, 0.0, 0.0])
     posTable = np.array([0.0, 0.0, 0.0])
     qposTable = np.array([0.0, 0.0, 0.0, 0.0])
@@ -100,7 +101,7 @@ def detectToMujoco(detection):
     allQuatsTable = []
 
     for k in range(len(detection)):
-        idAruco = detectorBasedeporte.detected_ids[k]
+        idAruco = detected_ids[k]
         idObject = arucoIdtoObjectId[str(idAruco)]
         posAruco = detection[k]
         posAruco = np.array(posAruco[1:]).reshape(2, 3)
@@ -113,12 +114,12 @@ def detectToMujoco(detection):
 
         if(20<=idAruco<=23):
             nbArucoTableDetected += 1
-            posTable += model.body_pos[idObject] - posArucoTable[str(idAruco)]
+            posTable += model.body_pos[idObject] - Rotation.from_quat(model.body_quat[idObject], scalar_first=True).apply(posArucoTable[str(idAruco)])
             allQuatsTable.append(model.body_quat[idObject])
         elif(idAruco==2):
             robotDetected = 1
-            posRobot = model.body_pos[idObject] - posArucoRobot
             qposRobot = model.body_quat[idObject]
+            posRobot = model.body_pos[idObject] - Rotation.from_quat(qposRobot, scalar_first=True).apply(posArucoRobot) 
 
     if(nbArucoTableDetected!=0):
         posTable /= nbArucoTableDetected
@@ -136,7 +137,11 @@ def detectToMujoco(detection):
 
     mujoco.mj_forward(model, data)
 
-detectToMujoco(detection)
+detectToMujoco([(True, np.array([[ 0.0],
+       [ 0.0],
+       [0.0]]), np.array([[0.0],
+       [ 0.0],
+       [0.0]]))], [20])
 
 fig = plt.gcf()
 def on_key(event):
@@ -149,10 +154,10 @@ def on_key(event):
         imageId = imageId % (len(images))
         print(imageId)
         detectorBasedeporte.changeImage(images[imageId])
-        detection = detectorBasedeporte.detect()
+        detectorBasedeporte.detect()
         detectorBasedeporte.showImage()
         fig.canvas.draw_idle()
-        detectToMujoco(detection)
+        detectToMujoco(detectorBasedeporte.detectedArucos, detectorBasedeporte.detected_ids)
 
 manager = plt.get_current_fig_manager()
 manager.window.setGeometry(0, 0, 960, 1080)
