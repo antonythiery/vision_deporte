@@ -153,10 +153,15 @@ def detectToMujoco(detection, detected_ids):
             allRotTable = Rotation.from_quat(allQuatsTable, scalar_first=True)
             R_world_table, posTable = mean_robust(allRotTable, allPosTable, allArucosTable)
             R_world_table = rotation_kabsch(R_world_table)
-            qposTable = (R_world_table * Rzn).as_quat(scalar_first=True)
+            R_world_table = R_world_table * Rzn
+            qposTable = (R_world_table).as_quat(scalar_first=True)
             posTable[2] = 0.001
             model.body_pos[idTable] = posTable
             model.body_quat[idTable] = qposTable
+
+        posRobotOnTable = R_world_table.inv().apply(posRobot-posTable)
+        angleRobotOnTable = np.rad2deg((R_world_table.inv() * R_world_robot).as_euler("xyz")[2])
+        print(f"posRobot : {posRobotOnTable}, angle : {angleRobotOnTable}")
 
     mujoco.mj_forward(model, data)
 
@@ -171,7 +176,6 @@ def on_key(event):
         else:
             imageId-=1
         imageId = imageId % (len(images))
-        print(imageId)
         detectorBasedeporte.changeImage(images[imageId])
         detectorBasedeporte.detect()
         detectorBasedeporte.showImage()
