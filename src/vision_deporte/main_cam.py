@@ -18,11 +18,9 @@ CAMERA_ID = 1
 CAMERA_WIDTH = 3840
 CAMERA_HEIGHT = 2160
 
-# Charger les paramètres de caméra
 camera_params_path = Path(__file__).parent / "tools" / "cameraParams.npz"
 camera_params = np.load(camera_params_path)
 
-# Initialiser la caméra
 cam = cv2.VideoCapture(CAMERA_ID)
 
 if not cam.isOpened():
@@ -31,10 +29,8 @@ if not cam.isOpened():
 cam.set(cv2.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
 cam.set(cv2.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
 
-# Initialiser MuJoCo une seule fois
 compute_pos = computePosition(MUJOCO_ON)
 
-# File des commandes du terminal
 commands = queue.Queue()
 
 
@@ -58,15 +54,10 @@ def read_commands():
 threading.Thread(target=read_commands, daemon=True).start()
 
 
-# Initialiser la fenêtre OpenCV une seule fois
-cv2.namedWindow("Camera - detection ArUco", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Camera - detection ArUco", 1280, 720)
-
 detector = None
 
 try:
     while True:
-        # Vérifier les commandes du terminal
         should_quit = False
 
         while not commands.empty():
@@ -96,7 +87,6 @@ try:
         )
         print(position)
 
-        # Actualiser MuJoCo
         if MUJOCO_ON:
             if not compute_pos.viewer.is_running():
                 break
@@ -104,7 +94,6 @@ try:
             mujoco.mj_step(compute_pos.model, compute_pos.data)
             compute_pos.viewer.sync()
 
-        # Traiter les événements OpenCV et permettre de quitter avec q
         key = cv2.waitKey(1) & 0xFF
 
         if key == ord("q"):

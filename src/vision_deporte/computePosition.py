@@ -36,8 +36,15 @@ class computePosition():
         3 : Orientation de la caméra pour une table à plat
         2 : Estimation de position et orientation selon l'axe z de l'ensemble {caméra + table} en fonction de la détection du robot
         '''
+        if(detected_ids is None):
+            return -1
+        
+        tableDetected = False
+        for id in self.detected_ids:
+            if id in [20, 21, 22, 23]:
+                tableDetected = True
 
-        if (self.idArucoRobot in detected_ids):
+        if (self.idArucoRobot in self.detected_ids and tableDetected):
             nbArucoTableDetected = 0
             allArucosTable = []
             allPosTable = []
@@ -45,8 +52,8 @@ class computePosition():
             self.allPoses = {}
             posArucoOnRobot = [0.002, 0.0, 0.4504]
 
-            idDetectionRobot = np.where(detected_ids==self.idArucoRobot)[0][0]
-            pos_ArucoRobot_Cam = detection[idDetectionRobot]
+            idDetectionRobot = np.where(self.detected_ids==self.idArucoRobot)[0][0]
+            pos_ArucoRobot_Cam = self.detection[idDetectionRobot]
             pos_ArucoRobot_Cam = np.array(pos_ArucoRobot_Cam[1:]).reshape(2, 3)
             R_cam_arucoRobot = Rotation.from_rotvec(pos_ArucoRobot_Cam[0])
 
@@ -63,12 +70,12 @@ class computePosition():
 
             self.allPoses["cam"] = [posCam, qposCam]
 
-            for k in range(len(detection)):
-                if(detected_ids[k]!=self.idArucoRobot):
+            for k in range(len(self.detection)):
+                if(self.detected_ids[k]!=self.idArucoRobot):
                     R_cam_arucoRobot = Rotation.from_rotvec(pos_ArucoRobot_Cam[0])
             
-                    idAruco = detected_ids[k]
-                    posAruco = detection[k]
+                    idAruco = self.detected_ids[k]
+                    posAruco = self.detection[k]
                     posAruco = np.array(posAruco[1:]).reshape(2, 3)
                     R_cam_aruco = Rotation.from_rotvec(posAruco[0])
                     R_world_aruco = R_world_cam * R_cam_aruco
@@ -141,8 +148,9 @@ class computePosition():
     def update_mujoco(self):
         keys = self.allPoses.keys()
         for key in keys:
-            objectId = self.arucoIdtoObjectId[key]
-            self.model.body_pos[objectId] = self.allPoses[key][0]
-            self.model.body_quat[objectId] = self.allPoses[key][1]
+            if key in self.arucoIdtoObjectId.keys():
+                objectId = self.arucoIdtoObjectId[key]
+                self.model.body_pos[objectId] = self.allPoses[key][0]
+                self.model.body_quat[objectId] = self.allPoses[key][1]
 
         mujoco.mj_forward(self.model, self.data)
