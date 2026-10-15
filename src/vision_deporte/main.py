@@ -1,93 +1,92 @@
-import numpy as np
+
 import time
-import mujoco
-import matplotlib
-matplotlib.use('QtAgg')
-import matplotlib.pyplot as plt
-from pathlib import Path
-import cv2
 import threading
 import queue
+from pathlib import Path
+
+import cv2
+import numpy as np
+import mujoco
 
 from computePosition import computePosition
 from tools.detectArucos import detectArucos
 
-mujocoOn = True
-imageId = 7
 
-def get_datas() : 
-    image_dir = "datas/exemple_images"
-    image_dir = Path(__file__).resolve().parents[2] / "datas/exemple_images"
+# Configuration
+MUJOCO_ON = True
+CAMERA_ID = 1
+CAMERA_WIDTH = 3840
+CAMERA_HEIGHT = 2160
 
-    images = [
-        cv2.imread(f, cv2.IMREAD_GRAYSCALE)
-        for f in image_dir.iterdir()
-        if f.suffix.lower() in (".png", ".jpg")
-    ]
-    return images
+camera_params_path = Path(__file__).parent / "tools" / "cameraParams.npz"
+camera_params = np.load(camera_params_path)
 
-images = get_datas()
+cam = cv2.VideoCapture(CAMERA_ID)
 
+if not cam.isOpened():
+    raise RuntimeError(f"Impossible d'ouvrir la caméra {CAMERA_ID}")
 
+cam.set(cv2.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
+cam.set(cv2.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
 
-cameraParams = np.load(Path(__file__).parent / "tools/cameraParams.npz")
-
-computePosBase = computePosition(mujocoOn)
-detectorBasedeporte = detectArucos(cameraParams)
-
-
-def process_image():
-    detectorBasedeporte.changeImage(images[imageId])
-    detectorBasedeporte.detect()
-    detectorBasedeporte.showImage()
-
-    print(
-        computePosBase.detectToRobotPosition(
-            detectorBasedeporte.detectedArucos,
-            detectorBasedeporte.detected_ids
-        )
-    )
+compute_pos = computePosition(MUJOCO_ON)
 
 commands = queue.Queue()
+
+
 def read_commands():
+    """Lit les commandes sans bloquer la boucle caméra."""
     while True:
-        command = input(
-            "Image suivante [n], précédente [p], quitter [q] : "
-        ).lower().strip()
+        try:
+            command = input(
+                "\nEntrée : continuer | q : quitter\n"
+            ).strip().lower()
+        except EOFError:
+            commands.put("q")
+            break
+
         commands.put(command)
+
         if command == "q":
             break
 
-threading.Thread(target=read_commands, daemon=True).start()
 
-# viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
+detector = None
+
 try:
-    # process_image()
+    while True:
+        should_quit = False
 
-    while computePosBase.viewer.is_running():
-        while not commands.empty():
-            command = commands.get()
+        ret, frame = cam.read()
 
-            if command == "q":
+        if not ret:
+            print("Erreur lors de la capture de l'image.")
+            break
+
+        detector = detectArucos(camera_params)
+        detector.changeImage(frame)
+        detector.detect()
+        detector.showImage()
+
+        position = compute_pos.detectToRobotPosition(
+            detector.detectedArucos,
+            detector.detected_ids
+        )
+        print(position)
+
+        if MUJOCO_ON:
+            if not compute_pos.viewer.is_running():
                 break
-            elif command == "n":
-                imageId = (imageId + 1) % len(images)
-                process_image()
-            elif command == "p":
-                imageId = (imageId - 1) % len(images)
-                process_image()
 
-        else:
-            mujoco.mj_step(computePosBase.model, computePosBase.data)
-            computePosBase.viewer.sync()
-            time.sleep(computePosBase.model.opt.timestep)
-            continue
-
-        break
+            mujoco.mj_step(compute_pos.model, compute_pos.data)
+            compute_pos.viewer.sync()
 
 except KeyboardInterrupt:
     pass
+
 finally:
-    if mujocoOn:
-        computePosBase.viewer.close()
+    cam.release()
     cv2.destroyAllWindows()
+
+    if MUJOCO_ON:
+        compute_pos.viewer.close()
