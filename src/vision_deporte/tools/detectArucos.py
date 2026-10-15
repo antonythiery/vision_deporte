@@ -35,8 +35,7 @@ class detectArucos:
     """detection des arucos dans une image"""
 
     def __init__(self, image, cameraParams):
-        self.imagePath = image     
-        self.image = plt.imread(image, cv2.IMREAD_GRAYSCALE)
+        self.image = image
         self.image = cv2.rotate(self.image, cv2.ROTATE_180)
 
         aruco_dict_4 = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
@@ -47,21 +46,26 @@ class detectArucos:
         self.detected_ids = []
 
     def changeImage(self, image):
-        self.imagePath = image
-        self.image = plt.imread(image, cv2.IMREAD_GRAYSCALE)
+        self.image = image
         self.image = cv2.rotate(self.image, cv2.ROTATE_180)
         self.detectedArucos = []
 
     def showImage(self):
-        plt.clf()
         for k in range(len(self.detected_corners)):
             corners_closed = np.vstack([self.detected_corners[k], self.detected_corners[k, 0]])
-            plt.plot( 
-                corners_closed[:, 0], corners_closed[:, 1], "r-"
+            pts = corners_closed.astype(np.int32).reshape((-1, 1, 2))
+            cv2.polylines( 
+                self.image, [pts], isClosed=False, color=(0, 0, 255), thickness=2
             )
-            plt.text(corners_closed[0, 0]-20, corners_closed[0, 1]-20, str(self.detected_ids[k]))
+            cv2.putText(
+                self.image, 
+                str(self.detected_ids[k]),
+                (int(corners_closed[0, 0]-20), int(corners_closed[0, 1]-20)), 
+                fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2,color=(0, 0, 255)
+            )
 
-        plt.imshow(self.image)
+        cv2.imshow("cam", cv2.resize(self.image, (1280, 720)))
+        cv2.waitKey(1)
 
     def detect(self):
         detection_corners, self.detected_ids, _ = self.arucoDetector.detectMarkers(self.image)

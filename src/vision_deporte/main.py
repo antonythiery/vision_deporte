@@ -1,21 +1,18 @@
 import numpy as np
-import os
 import time
 import mujoco
-import mujoco.viewer
-import cv2
 import matplotlib
 matplotlib.use('QtAgg')
 import matplotlib.pyplot as plt
-from scipy.spatial.transform import Rotation
 from pathlib import Path
-import xml.etree.ElementTree as ET
+import cv2
+import threading
+import queue
 
 from computePosition import computePosition
 from tools.detectArucos import detectArucos
-from tools.utils import mean_robust, rotation_kabsch
 
-mujocoOn = False
+mujocoOn = True
 imageId = 7
 
 def get_datas() : 
@@ -23,7 +20,7 @@ def get_datas() :
     image_dir = Path(__file__).resolve().parents[2] / "datas/exemple_images"
 
     images = [
-        f
+        cv2.imread(f, cv2.IMREAD_GRAYSCALE)
         for f in image_dir.iterdir()
         if f.suffix.lower() in (".png", ".jpg")
     ]
@@ -31,50 +28,66 @@ def get_datas() :
 
 images = get_datas()
 
+
+
 cameraParams = np.load(Path(__file__).parent / "tools/cameraParams.npz")
-detectorBasedeporte = detectArucos(images[imageId], cameraParams)
-detectorBasedeporte.detect()
-detectorBasedeporte.showImage()
 
 computePosBase = computePosition(mujocoOn)
+detectorBasedeporte = detectArucos(images[imageId], cameraParams)
 
-fig = plt.gcf()
-def on_key(event):
-    global imageId
-    if(event.key=="right" or event.key=="left"):
-        if(event.key=="right"):
-            imageId+=1
-        else:
-            imageId-=1
-        imageId = imageId % (len(images))
-        t0 = time.perf_counter()
-        detectorBasedeporte.changeImage(images[imageId])
-        detectorBasedeporte.detect()
-        detectorBasedeporte.showImage()
-        fig.canvas.draw_idle()
-        print(computePosBase.detectToRobotPosition(detectorBasedeporte.detectedArucos, detectorBasedeporte.detected_ids))
-        t1 = time.perf_counter()
-        print(f"temps exec : {t1-t0:6f}")
 
-manager = plt.get_current_fig_manager()
-manager.window.setGeometry(0, 0, 960, 1080)
-fig.canvas.mpl_connect("key_press_event", on_key)
-plt.show(block=False)
+def process_image():
+    detectorBasedeporte.changeImage(images[imageId])
+    detectorBasedeporte.detect()
+    detectorBasedeporte.showImage()
+
+    print(
+        computePosBase.detectToRobotPosition(
+            detectorBasedeporte.detectedArucos,
+            detectorBasedeporte.detected_ids
+        )
+    )
+
+commands = queue.Queue()
+def read_commands():
+    while True:
+        command = input(
+            "Image suivante [n], précédente [p], quitter [q] : "
+        ).lower().strip()
+        commands.put(command)
+        if command == "q":
+            break
+
+threading.Thread(target=read_commands, daemon=True).start()
 
 # viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
-try :
-    if mujocoOn:
-        while 1:
+try:
+    # process_image()
+
+    while computePosBase.viewer.is_running():
+        while not commands.empty():
+            command = commands.get()
+
+            if command == "q":
+                break
+            elif command == "n":
+                imageId = (imageId + 1) % len(images)
+                process_image()
+            elif command == "p":
+                imageId = (imageId - 1) % len(images)
+                process_image()
+
+        else:
             mujoco.mj_step(computePosBase.model, computePosBase.data)
             computePosBase.viewer.sync()
             time.sleep(computePosBase.model.opt.timestep)
-            fig.canvas.flush_events()
-    else:
-        while 1:
-            fig.canvas.flush_events()
-except KeyboardInterrupt: 
+            continue
+
+        break
+
+except KeyboardInterrupt:
     pass
-finally :
-    if mujocoOn : 
+finally:
+    if mujocoOn:
         computePosBase.viewer.close()
-    plt.close("all")
+    cv2.destroyAllWindows()
