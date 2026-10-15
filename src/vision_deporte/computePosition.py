@@ -4,7 +4,7 @@ import mujoco.viewer
 from pathlib import Path
 import xml.etree.ElementTree as ET
 from scipy.spatial.transform import Rotation
-from tools.utils import mean_robust, rotation_kabsch
+from tools.utils import mean_robust, rotation_kabsch, passe_bas_expo
 
 class computePosition():
 
@@ -14,6 +14,9 @@ class computePosition():
         self.posRobot = [0.0, 0.0, 0.0]
         self.qposRobot = [1.0, 0.0, 0.0, 0.0]
 
+        self.posTable = np.array([0.0, 0.0, 0.0])
+        self.R_world_table = Rotation.identity()
+
         if(mujocoOn):
             self.setup_mujoco()
             self.find_robot_mujoco()
@@ -21,6 +24,11 @@ class computePosition():
     def detectToRobotPosition(self, detection, detected_ids):
         if(self.mujocoOn):
             self.find_robot_mujoco()
+
+        if(detection is None or detected_ids is None):
+            return -1
+        if(len(detection) != len(detected_ids)):
+            return -1
         
         self.detection = detection
         self.detected_ids = detected_ids
@@ -97,12 +105,13 @@ class computePosition():
                 R_world_table = rotation_kabsch(R_world_table)
                 Rzn = Rotation.from_euler('z', -np.pi/2)
                 R_world_table = R_world_table * Rzn
-                qposTable = (R_world_table).as_quat(scalar_first=True)
-                posTable[2] = 0.001
-                self.allPoses["table"] = [posTable, qposTable]
+                self.posTable, self.R_world_table = passe_bas_expo(self.posTable, posTable, self.R_world_table, R_world_table, 0.3)
+                qposTable = (self.R_world_table).as_quat(scalar_first=True)
+                self.posTable[2] = 0.001
+                self.allPoses["table"] = [self.posTable, qposTable]
 
-            posRobotOnTable = R_world_table.inv().apply(self.posRobot-posTable)
-            angleRobotOnTable = np.rad2deg((R_world_table.inv() * R_world_robot).as_euler("xyz")[2])
+            posRobotOnTable = R_world_table.inv().apply(self.posRobot-self.posTable)
+            angleRobotOnTable = np.rad2deg((self.R_world_table.inv() * R_world_robot).as_euler("xyz")[2])
 
             if(self.mujocoOn):
                 self.update_mujoco()

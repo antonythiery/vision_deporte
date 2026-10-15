@@ -1,4 +1,4 @@
-from scipy.spatial.transform import Rotation
+from scipy.spatial.transform import Rotation, Slerp
 import numpy as np
 
 posArucoTable = {
@@ -33,4 +33,11 @@ def rotation_kabsch(Rcaptured_world_table: Rotation):
     theta = np.arctan2(M[1, 0]- M[0, 1], M[0, 0] + M[1, 1])
     Rflat_world_table = Rotation.from_euler("z", theta)
     return Rflat_world_table
-    
+
+def passe_bas_expo(prev_pos, pos, prev_R, R, ratio):
+    posPB = np.array(prev_pos)*(1-ratio) + np.array(pos)*ratio
+
+    Rc = Rotation.concatenate([prev_R, R])
+    slerp = Slerp([0,1], Rc)
+    RPB = slerp(ratio)
+    return posPB, RPB

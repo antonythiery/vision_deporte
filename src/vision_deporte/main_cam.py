@@ -51,24 +51,11 @@ def read_commands():
             break
 
 
-threading.Thread(target=read_commands, daemon=True).start()
-
-
 detector = None
 
 try:
     while True:
         should_quit = False
-
-        while not commands.empty():
-            command = commands.get()
-
-            if command == "q":
-                should_quit = True
-                break
-
-        if should_quit:
-            break
 
         ret, frame = cam.read()
 
@@ -93,11 +80,6 @@ try:
 
             mujoco.mj_step(compute_pos.model, compute_pos.data)
             compute_pos.viewer.sync()
-
-        key = cv2.waitKey(1) & 0xFF
-
-        if key == ord("q"):
-            break
 
 except KeyboardInterrupt:
     pass

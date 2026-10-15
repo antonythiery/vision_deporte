@@ -1,5 +1,5 @@
 <mujoco model="scene">
-    <option timestep="0.001"/>
+    <option timestep="0.01"/>
 
     <include file="box_tests.xml"/>
 
