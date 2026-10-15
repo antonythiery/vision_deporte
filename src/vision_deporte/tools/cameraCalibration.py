@@ -80,4 +80,4 @@ RMS, cameraMatrix, distCoeffs, rvecs, tvecs = cv2.calibrateCamera(
 
 print(f"RMS : {RMS} \n cameraMatrix : \n{cameraMatrix} \n distCoeffs : {distCoeffs}")
 
-np.savez("src/vision_deporte/cameraParams", RMS=RMS, cameraMatrix=cameraMatrix, distCoeffs=distCoeffs)
+np.savez("src/vision_deporte/tools/cameraParams", RMS=RMS, cameraMatrix=cameraMatrix, distCoeffs=distCoeffs)
