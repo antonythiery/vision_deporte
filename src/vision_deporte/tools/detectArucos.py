@@ -34,10 +34,7 @@ arucoDirectory = {
 class detectArucos:
     """detection des arucos dans une image"""
 
-    def __init__(self, image, cameraParams):
-        self.image = image
-        self.image = cv2.rotate(self.image, cv2.ROTATE_180)
-
+    def __init__(self, cameraParams):
         aruco_dict_4 = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
         self.arucoDetector = aruco.ArucoDetector(aruco_dict_4)
         self.detectedArucos = []
@@ -69,15 +66,18 @@ class detectArucos:
 
     def detect(self):
         detection_corners, self.detected_ids, _ = self.arucoDetector.detectMarkers(self.image)
-        self.detected_corners = np.array(detection_corners).reshape(-1, 4, 2)
+        if(self.detected_ids is not None):
+            self.detected_corners = np.array(detection_corners).reshape(-1, 4, 2)
 
-        for k in range(len(self.detected_ids)):
-            self.detectedArucos.append( 
-                cv2.solvePnP(
-                    arucoDirectory[str(self.detected_ids[k])], 
-                    self.detected_corners[k], 
-                    self.cameraParams['cameraMatrix'], 
-                    self.cameraParams['distCoeffs'],
-                    flags=cv2.SOLVEPNP_IPPE_SQUARE
-            ))
-        return(self.detectedArucos)
+            for k in range(len(self.detected_ids)):
+                if str(self.detected_ids[k]) in arucoDirectory.keys() :
+                    self.detectedArucos.append( 
+                        cv2.solvePnP(
+                            arucoDirectory[str(self.detected_ids[k])], 
+                            self.detected_corners[k], 
+                            self.cameraParams['cameraMatrix'], 
+                            self.cameraParams['distCoeffs'],
+                            flags=cv2.SOLVEPNP_IPPE_SQUARE
+                    ))
+            return(self.detectedArucos)
+        return None

@@ -19,12 +19,14 @@ def mean_robust(rotations: Rotation, poses, arucosIds, max_var= 0.5):
             rotations_cleaned.append(Rotation.as_matrix(rotations[k]))
             positions_cleaned.append(poses[k])
             arucosIds_cleaned.append(arucosIds[k])
-    newM = Rotation.from_matrix(rotations_cleaned).mean()
-    for k in range(len(positions_cleaned)):
-        positions_cleaned[k] -= rotations_cleaned[k] @ posArucoTable[str(arucosIds_cleaned[k])]  
-    posesMean = sum(positions_cleaned)/len(positions_cleaned)
+    if(len(rotations_cleaned)!=0):
+        newM = Rotation.from_matrix(rotations_cleaned).mean()
+        for k in range(len(positions_cleaned)):
+            positions_cleaned[k] -= rotations_cleaned[k] @ posArucoTable[str(arucosIds_cleaned[k])]  
+        posesMean = sum(positions_cleaned)/len(positions_cleaned)
 
-    return newM, posesMean
+        return newM, posesMean
+    return Rotation.identity, [0, 0, 0]
 
 def rotation_kabsch(Rcaptured_world_table: Rotation):
     M = Rcaptured_world_table.as_matrix()

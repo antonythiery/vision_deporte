@@ -33,7 +33,7 @@ images = get_datas()
 cameraParams = np.load(Path(__file__).parent / "tools/cameraParams.npz")
 
 computePosBase = computePosition(mujocoOn)
-detectorBasedeporte = detectArucos(images[imageId], cameraParams)
+detectorBasedeporte = detectArucos(cameraParams)
 
 
 def process_image():
