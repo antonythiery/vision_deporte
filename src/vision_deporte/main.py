@@ -15,8 +15,8 @@ from computePosition import computePosition
 from tools.detectArucos import detectArucos
 from tools.utils import mean_robust, rotation_kabsch
 
+mujocoOn = False
 imageId = 7
-
 
 def get_datas() : 
     image_dir = "datas/exemple_images"
@@ -36,17 +36,7 @@ detectorBasedeporte = detectArucos(images[imageId], cameraParams)
 detectorBasedeporte.detect()
 detectorBasedeporte.showImage()
 
-computePosBase = computePosition()
-
-mujocoOn = True
-if(mujocoOn):
-    computePosBase.setup_mujoco()
-    computePosBase.find_robot_mujoco()
-    print(computePosBase.idArucoRobot)
-    print(computePosBase.detectToRobotPosition(detectorBasedeporte.detectedArucos, detectorBasedeporte.detected_ids))
-    computePosBase.update_mujoco()
-else :
-    print(computePosBase.detectToRobotPosition())
+computePosBase = computePosition(mujocoOn)
 
 fig = plt.gcf()
 def on_key(event):
@@ -63,8 +53,6 @@ def on_key(event):
         detectorBasedeporte.showImage()
         fig.canvas.draw_idle()
         print(computePosBase.detectToRobotPosition(detectorBasedeporte.detectedArucos, detectorBasedeporte.detected_ids))
-        if(mujocoOn):
-            computePosBase.update_mujoco()
         t1 = time.perf_counter()
         print(f"temps exec : {t1-t0:6f}")
 
@@ -75,13 +63,18 @@ plt.show(block=False)
 
 # viewer.opt.frame = mujoco.mjtFrame.mjFRAME_BODY
 try :
-    while computePosBase.viewer.is_running():
-        mujoco.mj_step(computePosBase.model, computePosBase.data)
-        computePosBase.viewer.sync()
-        time.sleep(computePosBase.model.opt.timestep)
-        fig.canvas.flush_events()
+    if mujocoOn:
+        while 1:
+            mujoco.mj_step(computePosBase.model, computePosBase.data)
+            computePosBase.viewer.sync()
+            time.sleep(computePosBase.model.opt.timestep)
+            fig.canvas.flush_events()
+    else:
+        while 1:
+            fig.canvas.flush_events()
 except KeyboardInterrupt: 
     pass
 finally :
-    computePosBase.viewer.close()
+    if mujocoOn : 
+        computePosBase.viewer.close()
     plt.close("all")

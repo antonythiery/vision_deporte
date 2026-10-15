@@ -8,12 +8,20 @@ from tools.utils import mean_robust, rotation_kabsch
 
 class computePosition():
 
-    def __init__(self):
+    def __init__(self, mujocoOn=False):
+        self.mujocoOn = mujocoOn
         self.idArucoRobot = 2
         self.posRobot = [0.0, 0.0, 0.0]
         self.qposRobot = [1.0, 0.0, 0.0, 0.0]
 
+        if(mujocoOn):
+            self.setup_mujoco()
+            self.find_robot_mujoco()
+
     def detectToRobotPosition(self, detection, detected_ids):
+        if(self.mujocoOn):
+            self.find_robot_mujoco()
+        
         self.detection = detection
         self.detected_ids = detected_ids
         '''
@@ -89,6 +97,8 @@ class computePosition():
             posRobotOnTable = R_world_table.inv().apply(self.posRobot-posTable)
             angleRobotOnTable = np.rad2deg((R_world_table.inv() * R_world_robot).as_euler("xyz")[2])
 
+            if(self.mujocoOn):
+                self.update_mujoco()
             return(posRobotOnTable, angleRobotOnTable)
         return(-1)
 
