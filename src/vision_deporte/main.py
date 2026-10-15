@@ -87,7 +87,7 @@ arucoIdtoObjectId = {
 
 # model.body_pos[idCam] = posCam
 
-def detectToMujoco(detection, detected_ids, mujocoOn=False):
+def detectToRobotPosition(detection, detected_ids, mujocoOn=False):
     '''
     Current : 
     1 : Récupération de la position du robot dans la simu
@@ -100,21 +100,26 @@ def detectToMujoco(detection, detected_ids, mujocoOn=False):
     3 : Orientation de la caméra pour une table à plat
     2 : Estimation de position et orientation selon l'axe z de l'ensemble {caméra + table} en fonction de la détection du robot
     '''
-    posRobot = np.array([0.0, 0.0, 0.0])
-    nbArucoTableDetected = 0
-    allArucosTable = []
-    allPosTable = []
-    allQuatsTable = []
-    allPoses = {}
 
     if (idArucoRobot in detected_ids):
+        nbArucoTableDetected = 0
+        allArucosTable = []
+        allPosTable = []
+        allQuatsTable = []
+        allPoses = {}
+
         idDetectionRobot = np.where(detected_ids==idArucoRobot)[0][0]
         pos_ArucoRobot_Cam = detection[idDetectionRobot]
         pos_ArucoRobot_Cam = np.array(pos_ArucoRobot_Cam[1:]).reshape(2, 3)
         R_cam_arucoRobot = Rotation.from_rotvec(pos_ArucoRobot_Cam[0])
 
-        posRobot = data.xpos[arucoIdtoObjectId["robot"]].copy()
-        qposRobot = data.xquat[arucoIdtoObjectId["robot"]].copy()
+        if(mujocoOn):
+            posRobot = data.xpos[arucoIdtoObjectId["robot"]].copy()
+            qposRobot = data.xquat[arucoIdtoObjectId["robot"]].copy()
+        else:
+            posRobot = [0.0, 0.0, 0.0]
+            qposRobot = [1.0, 0.0, 0.0, 0.0]
+
         R_world_robot = Rotation.from_quat(qposRobot, scalar_first=True)
 
         qposArucoRobot = qposRobot
@@ -160,19 +165,20 @@ def detectToMujoco(detection, detected_ids, mujocoOn=False):
 
         posRobotOnTable = R_world_table.inv().apply(posRobot-posTable)
         angleRobotOnTable = np.rad2deg((R_world_table.inv() * R_world_robot).as_euler("xyz")[2])
-        print(f"posRobot : {posRobotOnTable}, angle : {angleRobotOnTable}")
 
-    if(mujocoOn):
-        keys = allPoses.keys()
-        print(type(keys))
-        for key in keys:
-            objectId = arucoIdtoObjectId[key]
-            model.body_pos[objectId] = allPoses[key][0]
-            model.body_quat[objectId] = allPoses[key][1]
+        if(mujocoOn):
+            keys = allPoses.keys()
+            for key in keys:
+                objectId = arucoIdtoObjectId[key]
+                model.body_pos[objectId] = allPoses[key][0]
+                model.body_quat[objectId] = allPoses[key][1]
 
-        mujoco.mj_forward(model, data)
+            mujoco.mj_forward(model, data)
 
-detectToMujoco(detectorBasedeporte.detectedArucos, detectorBasedeporte.detected_ids, mujocoOn=True)
+        return(posRobotOnTable, angleRobotOnTable)
+    return(-1)
+
+detectToRobotPosition(detectorBasedeporte.detectedArucos, detectorBasedeporte.detected_ids, mujocoOn=True)
 
 fig = plt.gcf()
 def on_key(event):
@@ -183,11 +189,14 @@ def on_key(event):
         else:
             imageId-=1
         imageId = imageId % (len(images))
+        t0 = time.perf_counter()
         detectorBasedeporte.changeImage(images[imageId])
         detectorBasedeporte.detect()
-        detectorBasedeporte.showImage()
-        fig.canvas.draw_idle()
-        detectToMujoco(detectorBasedeporte.detectedArucos, detectorBasedeporte.detected_ids, mujocoOn=True)
+        # detectorBasedeporte.showImage()
+        # fig.canvas.draw_idle()
+        print(detectToRobotPosition(detectorBasedeporte.detectedArucos, detectorBasedeporte.detected_ids, mujocoOn=True))
+        t1 = time.perf_counter()
+        print(f"temps exec : {t1-t0:6f}")
 
 manager = plt.get_current_fig_manager()
 manager.window.setGeometry(0, 0, 960, 1080)

@@ -36,8 +36,8 @@ class detectArucos:
 
     def __init__(self, image, cameraParams):
         self.imagePath = image     
-        self.image = plt.imread(image)
-        self.image = np.rot90(self.image, 2)
+        self.image = plt.imread(image, cv2.IMREAD_GRAYSCALE)
+        self.image = cv2.rotate(self.image, cv2.ROTATE_180)
 
         aruco_dict_4 = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
         self.arucoDetector = aruco.ArucoDetector(aruco_dict_4)
@@ -48,8 +48,8 @@ class detectArucos:
 
     def changeImage(self, image):
         self.imagePath = image
-        self.image = plt.imread(image)
-        self.image = np.rot90(self.image, 2)
+        self.image = plt.imread(image, cv2.IMREAD_GRAYSCALE)
+        self.image = cv2.rotate(self.image, cv2.ROTATE_180)
         self.detectedArucos = []
 
     def showImage(self):
@@ -73,6 +73,7 @@ class detectArucos:
                     arucoDirectory[str(self.detected_ids[k])], 
                     self.detected_corners[k], 
                     self.cameraParams['cameraMatrix'], 
-                    self.cameraParams['distCoeffs']
+                    self.cameraParams['distCoeffs'],
+                    flags=cv2.SOLVEPNP_IPPE_SQUARE
             ))
         return(self.detectedArucos)
