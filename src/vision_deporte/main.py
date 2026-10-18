@@ -18,6 +18,7 @@ CAMERA_ON = False
 CAMERA_ID = 1
 CAMERA_WIDTH = 3840
 CAMERA_HEIGHT = 2160
+mujoco_viewer_f = 60
 
 def setup_camera():
     camera_params_path = Path(__file__).parent / "tools" / "cameraParams.npz"
@@ -38,7 +39,7 @@ if CAMERA_ON:
 compute_pos = computePosition(MUJOCO_ON)
 
 detector = None
-t0 = time.monotonic()
+tStep = tFrame = time.monotonic()
 
 try:
     while True:
@@ -64,18 +65,21 @@ try:
             if not compute_pos.viewer.is_running():
                 break
 
-            mujoco.mj_step(compute_pos.model, compute_pos.data)
-            compute_pos.viewer.sync()
-            t1 = time.monotonic()
-            print(t1 - t0)
-            t0 = t1
+            t0 = time.monotonic()
+            if t0 - tStep > compute_pos.model.opt.timestep:
+                mujoco.mj_step(compute_pos.model, compute_pos.data)
+                tStep = time.monotonic()
+            if t0 - tFrame > 1/mujoco_viewer_f:
+                compute_pos.viewer.sync()
+                tFrame = time.monotonic()
 
 except KeyboardInterrupt:
     pass
 
 finally:
-    cam.release()
-    cv2.destroyAllWindows()
+    if CAMERA_ON:
+        cam.release()
+        cv2.destroyAllWindows()
 
     if MUJOCO_ON:
         compute_pos.viewer.close()

@@ -128,7 +128,6 @@ class computePosition():
 
         self.model = mujoco.MjModel.from_xml_path(str(tmp))
         self.data = mujoco.MjData(self.model)
-
         mujoco.mj_kinematics(self.model, self.data)
 
         self.viewer = mujoco.viewer.launch_passive(
