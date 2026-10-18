@@ -26,10 +26,19 @@
       <!-- Part patin -->
       <geom type="mesh" class="visual" pos="0.0635 -0.145 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
       <geom type="mesh" class="collision" pos="0.0635 -0.145 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
-      <geom type="sphere" class="collision_simple" pos="0.0635 -0.145 0.0106" size="0.0079" quat="0.707107 0 0 0.707107"/>
-      <!-- Part speaker -->
-      <geom type="mesh" class="visual" pos="-0.00796457 0.112723 0.1366" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="speaker" material="speaker_material"/>
-      <geom type="mesh" class="collision" pos="-0.00796457 0.112723 0.1366" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="speaker" material="speaker_material"/>
+      <geom type="sphere" class="collision_simple" pos="0.0635 -0.145 0.0106" size="0.0079" quat="0.707107 0 0 0.707107" condim="1" priority="1"/>
+      <!-- Part patin_2 -->
+      <geom type="mesh" class="visual" pos="0.0635 0.145 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <geom type="mesh" class="collision" pos="0.0635 0.145 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <geom type="sphere" class="collision_simple" pos="0.0635 0.145 0.0106" size="0.0079" quat="0.707107 0 0 0.707107" condim="1" priority="1"/>
+      <!-- Part patin_3 -->
+      <geom type="mesh" class="visual" pos="-0.0915 0.085 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <geom type="mesh" class="collision" pos="-0.0915 0.085 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <geom type="sphere" class="collision_simple" pos="-0.0915 0.085 0.0106" size="0.0079" quat="0.707107 0 0 0.707107" condim="1" priority="1"/>
+      <!-- Part patin_4 -->
+      <geom type="mesh" class="visual" pos="-0.0915 -0.085 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <geom type="mesh" class="collision" pos="-0.0915 -0.085 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
+      <geom type="sphere" class="collision_simple" pos="-0.0915 -0.085 0.0106" size="0.0079" quat="0.707107 0 0 0.707107" condim="1" priority="1"/>
       <!-- Part profile1515x320 -->
       <geom type="mesh" class="visual" pos="0.0635 -0.17 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
       <geom type="mesh" class="collision" pos="0.0635 -0.17 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
@@ -38,25 +47,24 @@
       <geom type="mesh" class="visual" pos="-0.0915 0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
       <geom type="mesh" class="collision" pos="-0.0915 0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
       <geom type="mesh" class="collision_simple" pos="-0.0915 0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
-      <!-- Part ecran_attache -->
-      <geom type="mesh" class="visual" pos="-0.0197597 0.14085 0.2646" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="ecran_attache" material="ecran_attache_material"/>
-      <geom type="mesh" class="collision" pos="-0.0197597 0.14085 0.2646" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="ecran_attache" material="ecran_attache_material"/>
       <!-- Part profile1515x320_3 -->
       <geom type="mesh" class="visual" pos="0.0635 0.17 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
       <geom type="mesh" class="collision" pos="0.0635 0.17 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
       <geom type="mesh" class="collision_simple" pos="0.0635 0.17 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
-      <!-- Part patin_2 -->
-      <geom type="mesh" class="visual" pos="0.0635 0.145 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
-      <geom type="mesh" class="collision" pos="0.0635 0.145 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
-      <geom type="sphere" class="collision_simple" pos="0.0635 0.145 0.0106" size="0.0079" quat="0.707107 0 0 0.707107"/>
-      <!-- Part patin_3 -->
-      <geom type="mesh" class="visual" pos="-0.0915 0.085 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
-      <geom type="mesh" class="collision" pos="-0.0915 0.085 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
-      <geom type="sphere" class="collision_simple" pos="-0.0915 0.085 0.0106" size="0.0079" quat="0.707107 0 0 0.707107"/>
+      <!-- Part profile1515x320_4 -->
+      <geom type="mesh" class="visual" pos="-0.0915 -0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
+      <geom type="mesh" class="collision" pos="-0.0915 -0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
+      <geom type="mesh" class="collision_simple" pos="-0.0915 -0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
       <!-- Part base_metal -->
       <geom type="mesh" class="visual" pos="-0.014 -0 0.0106" quat="0.707107 0 -0 0.707107" mesh="base_metal" material="base_metal_material"/>
       <geom type="mesh" class="collision" pos="-0.014 -0 0.0106" quat="0.707107 0 -0 0.707107" mesh="base_metal" material="base_metal_material"/>
       <geom type="mesh" class="collision_simple" pos="-0.014 -0 0.0106" quat="0.707107 0 -0 0.707107" mesh="base_metal" material="base_metal_material"/>
+      <!-- Part speaker -->
+      <geom type="mesh" class="visual" pos="-0.00796457 0.112723 0.1366" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="speaker" material="speaker_material"/>
+      <geom type="mesh" class="collision" pos="-0.00796457 0.112723 0.1366" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="speaker" material="speaker_material"/>
+      <!-- Part ecran_attache -->
+      <geom type="mesh" class="visual" pos="-0.0197597 0.14085 0.2646" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="ecran_attache" material="ecran_attache_material"/>
+      <geom type="mesh" class="collision" pos="-0.0197597 0.14085 0.2646" quat="0.693216 -0.693216 -0.139468 0.139468" mesh="ecran_attache" material="ecran_attache_material"/>
       <!-- Part speaker_2 -->
       <geom type="mesh" class="visual" pos="-0.00796457 -0.112723 0.1366" quat="0.588797 0.391559 -0.588797 0.391559" mesh="speaker" material="speaker_material"/>
       <geom type="mesh" class="collision" pos="-0.00796457 -0.112723 0.1366" quat="0.588797 0.391559 -0.588797 0.391559" mesh="speaker" material="speaker_material"/>
@@ -102,10 +110,6 @@
       <!-- Part equerre_gauche_2 -->
       <geom type="mesh" class="visual" pos="0.0635 0.17 0.0166" quat="0 -1 -0 0" mesh="equerre_gauche__2" material="equerre_gauche__2_material"/>
       <geom type="mesh" class="collision" pos="0.0635 0.17 0.0166" quat="0 -1 -0 0" mesh="equerre_gauche__2" material="equerre_gauche__2_material"/>
-      <!-- Part patin_4 -->
-      <geom type="mesh" class="visual" pos="-0.0915 -0.085 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
-      <geom type="mesh" class="collision" pos="-0.0915 -0.085 0.0027" quat="0.707107 0 0 0.707107" mesh="patin" material="patin_material"/>
-      <geom type="sphere" class="collision_simple" pos="-0.0915 -0.085 0.0106" size="0.0079" quat="0.707107 0 0 0.707107"/>
       <!-- Part profile1515x150_2 -->
       <geom type="mesh" class="visual" pos="0.0589005 -0.170584 0.3261" quat="0.391559 0.391559 -0.588797 -0.588797" mesh="profile1515x150" material="profile1515x150_material"/>
       <geom type="mesh" class="collision" pos="0.0589005 -0.170584 0.3261" quat="0.391559 0.391559 -0.588797 -0.588797" mesh="profile1515x150" material="profile1515x150_material"/>
@@ -127,10 +131,6 @@
       <!-- Part side_pannel_2 -->
       <geom type="mesh" class="visual" pos="-0.0226602 -0.147767 0.1751" quat="0.197238 0 -0 0.980356" mesh="side_pannel__2" material="side_pannel__2_material"/>
       <geom type="mesh" class="collision" pos="-0.0226602 -0.147767 0.1751" quat="0.197238 0 -0 0.980356" mesh="side_pannel__2" material="side_pannel__2_material"/>
-      <!-- Part profile1515x320_4 -->
-      <geom type="mesh" class="visual" pos="-0.0915 -0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
-      <geom type="mesh" class="collision" pos="-0.0915 -0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
-      <geom type="mesh" class="collision_simple" pos="-0.0915 -0.105 0.0136" quat="0.707107 0 0 0.707107" mesh="profile1515x320" material="profile1515x320_material"/>
       <!-- Part panneau_actio_top -->
       <geom type="mesh" class="visual" pos="-0.003 0.0125 0.3011" quat="0.707107 0 0 0.707107" mesh="panneau_actio_top" material="panneau_actio_top_material"/>
       <geom type="mesh" class="collision" pos="-0.003 0.0125 0.3011" quat="0.707107 0 0 0.707107" mesh="panneau_actio_top" material="panneau_actio_top_material"/>
