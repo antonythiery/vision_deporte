@@ -107,7 +107,7 @@ class computePosition():
                 R_world_table = R_world_table * Rzn
                 self.posTable, self.R_world_table = passe_bas_expo(self.posTable, posTable, self.R_world_table, R_world_table, 0.3)
                 qposTable = (self.R_world_table).as_quat(scalar_first=True)
-                self.posTable[2] = 0.001
+                self.posTable[2] = -0.0005
                 self.allPoses["table"] = [self.posTable, qposTable]
 
             posRobotOnTable = R_world_table.inv().apply(self.posRobot-self.posTable)
