@@ -12,8 +12,10 @@ dependencies = [
     "opencv-python>=5.0.0.93",
     "pandas>=3.0.5",
     "pillow>=12.3.0",
+    "pygame>=2.6.1",
     "pyqt6>=6.11.0",
     "scipy>=1.18.1",
+    "stable-baselines3>=2.9.0",
     "tk>=0.1.0",
 ]
 
