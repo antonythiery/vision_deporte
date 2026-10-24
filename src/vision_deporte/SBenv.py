@@ -20,8 +20,10 @@ class RobotEnv(gym.Env):
         self.n_steps = 0
         self.sceneTimeStep = self.model.opt.timestep
 
-        self.posObjectif = np.array([0.0, 2.0, 0.0])
-        self.R_world_obj = Rotation.from_euler("xyz", [0.0, 0.0, np.pi/2])
+        self.posRobot = np.array([1.0, 0.0, 0.0])
+        self.R_world_robot = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])  
+        self.posObjectif = np.array([0.0, 0.0, 0.0])
+        self.R_world_obj = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])
 
         self.idRobotModel = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "robot_base_metal")
         idRobotRightWheelCapsule = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, "robot_capsuleWheel")
@@ -42,11 +44,11 @@ class RobotEnv(gym.Env):
         )
 
     def _get_obs(self, action):
-        robot_pos = self.data.xpos[self.idRobotModel].copy()
+        self.posRobot = self.data.xpos[self.idRobotModel].copy()
         robot_qpos = self.data.xquat[self.idRobotModel].copy()
-        R_world_robot = Rotation.from_quat(robot_qpos, scalar_first=True)
-        R_robot_obj = R_world_robot.inv() * self.R_world_obj
-        posObjRobot = R_world_robot.inv().apply(self.posObjectif - robot_pos)
+        self.R_world_robot = Rotation.from_quat(robot_qpos, scalar_first=True)
+        R_robot_obj = self.R_world_robot.inv() * self.R_world_obj
+        posObjRobot = self.R_world_robot.inv().apply(self.posObjectif - self.posRobot)
 
         observation =  np.concatenate([
             posObjRobot[:2],
@@ -56,8 +58,20 @@ class RobotEnv(gym.Env):
 
         return observation
 
+    def _get_rew(self):
+        pass
+
+    def _terminated(self, posSeuil=0.1, angleSeuil=10):
+        '''posSeuil [m], angleSeuil [deg]'''
+        disObjectif = np.linalg.norm(self.posRobot-self.posObjectif)
+        R_robot_obj = self.R_world_robot.inv() * self.R_world_obj
+        distAngleObjectif = np.linalg.norm(R_robot_obj.as_euler("xyz", degrees=True)[2])
+        if(disObjectif<=posSeuil and distAngleObjectif<=angleSeuil):
+            return True
+        return False
+
     def _rand_pos_in_table(self):
-        pos_robot = np.random.rand(3)
+        pos_robot = self.np_random.random(3)
         pos_robot[0] *= (2 - 2*self.robotRadius)
         pos_robot[0] += self.robotRadius
         pos_robot[1] -= 0.5
@@ -93,13 +107,16 @@ class RobotEnv(gym.Env):
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
         mujoco.mj_forward(self.model, self.data)
-        self.observation = self._get_obs(action)
-
+        observation = self._get_obs(action)
+        reward = self._get_rew()
+        terminated = self._terminated()
+        print(terminated)
 
 RLenv = RobotEnv(str(Path(__file__).resolve().parent / "models/scene.xml"))
 
 t0 = time.monotonic()
 try:
+    # RLenv.reset()
     while(1):
         t1 = time.monotonic()
         if(t1-t0>= (RLenv.sceneTimeStep * RLenv.frame_skip)):
@@ -107,8 +124,7 @@ try:
             RLenv.step(np.array([0.0, 0.0]))
             if RLenv.n_steps % 1 == 0:
                 RLenv.viewer.sync()
-                # print(RLenv.observation)
-            if RLenv.n_steps % 50 == 0:
+            if RLenv.n_steps % 500 == 0:
                 RLenv.reset()
 except KeyboardInterrupt:
     RLenv.viewer.close()
