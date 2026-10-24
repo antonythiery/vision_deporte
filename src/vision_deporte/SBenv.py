@@ -26,6 +26,7 @@ class RobotEnv(gym.Env):
         self.idRobotModel = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "robot_base_metal")
         idRobotRightWheelCapsule = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, "robot_capsuleWheel")
         self.robotWheelRadius = self.model.geom_size[idRobotRightWheelCapsule][0]
+        self.robotRadius = 0.20645 #[mm]
 
         robotMaxSpeed = 1 #[m/s]
         self.wheelMaxSpeed = robotMaxSpeed / self.robotWheelRadius #[rad/s]
@@ -55,12 +56,35 @@ class RobotEnv(gym.Env):
 
         return observation
 
+    def _rand_pos_in_table(self):
+        pos_robot = np.random.rand(3)
+        pos_robot[0] *= (2 - 2*self.robotRadius)
+        pos_robot[0] += self.robotRadius
+        pos_robot[1] -= 0.5
+        pos_robot[1] *= (3 - 2*self.robotRadius)
+        pos_robot[2] *= 2*np.pi
+        pos_robot = np.concatenate([
+            np.array(pos_robot[:2]),
+            np.array([0.0]), 
+            Rotation.from_euler("xyz", [0.0, 0.0, pos_robot[2]]).as_quat(scalar_first=True), 
+            np.array([0.0, 0.0])
+        ])
+        return pos_robot
+
     def reset(self, seed=None, options=None):
         mujoco.mj_resetData(self.model, self.data)
         super().reset(seed=seed)
-        mujoco.mj_forward(self.model, self.data)
+
+        pos_robot = self._rand_pos_in_table()
+        self.data.qpos = pos_robot
+
+        pos_objectif = self._rand_pos_in_table()
+        self.posObjectif = pos_objectif[:3]
+        self.R_world_obj = Rotation.from_quat(pos_objectif[3:7], scalar_first=True)
         
-        print(np.random.rand(2))
+        mujoco.mj_forward(self.model, self.data)
+        self.n_steps = 0
+        return self._get_obs
 
     def step(self, action):
         self.n_steps+=1
@@ -80,11 +104,11 @@ try:
         t1 = time.monotonic()
         if(t1-t0>= (RLenv.sceneTimeStep * RLenv.frame_skip)):
             t0 = t1
-            RLenv.step(np.array([0.1,0.0]))
+            RLenv.step(np.array([0.0, 0.0]))
             if RLenv.n_steps % 1 == 0:
                 RLenv.viewer.sync()
-                print(RLenv.observation)
-            if RLenv.n_steps % 1000 == 0:
+                # print(RLenv.observation)
+            if RLenv.n_steps % 50 == 0:
                 RLenv.reset()
 except KeyboardInterrupt:
     RLenv.viewer.close()
