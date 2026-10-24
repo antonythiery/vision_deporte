@@ -18,6 +18,7 @@ class RobotEnv(gym.Env):
         self.frame_skip = frame_skip
         self.max_steps = max_steps
         self.n_steps = 0
+        self.sceneTimeStep = self.model.opt.timestep
 
         self.posObjectif = np.array([0.0, 2.0, 0.0])
         self.R_world_obj = Rotation.from_euler("xyz", [0.0, 0.0, np.pi/2])
@@ -51,19 +52,24 @@ class RobotEnv(gym.Env):
             np.array([np.cos(R_robot_obj.as_euler("xyz")[2]), np.sin(R_robot_obj.as_euler("xyz")[2])]),
             action
         ]).astype(np.float32)
+
         return observation
 
     def reset(self, seed=None, options=None):
+        mujoco.mj_resetData(self.model, self.data)
         super().reset(seed=seed)
-        raise NotImplementedError
+        mujoco.mj_forward(self.model, self.data)
+        
+        print(np.random.rand(2))
 
     def step(self, action):
         self.n_steps+=1
         self.data.ctrl[:] = action * self.wheelMaxSpeed
 
+        for _ in range(self.frame_skip):
+            mujoco.mj_step(self.model, self.data)
+        mujoco.mj_forward(self.model, self.data)
         self.observation = self._get_obs(action)
-        
-        mujoco.mj_step(self.model, self.data)
 
 
 RLenv = RobotEnv(str(Path(__file__).resolve().parent / "models/scene.xml"))
@@ -72,11 +78,13 @@ t0 = time.monotonic()
 try:
     while(1):
         t1 = time.monotonic()
-        if(t1-t0>=0.002):
+        if(t1-t0>= (RLenv.sceneTimeStep * RLenv.frame_skip)):
             t0 = t1
             RLenv.step(np.array([0.1,0.0]))
-            if RLenv.n_steps % 10 == 0:
+            if RLenv.n_steps % 1 == 0:
                 RLenv.viewer.sync()
                 print(RLenv.observation)
+            if RLenv.n_steps % 1000 == 0:
+                RLenv.reset()
 except KeyboardInterrupt:
     RLenv.viewer.close()
