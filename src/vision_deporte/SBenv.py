@@ -4,6 +4,7 @@ import mujoco.viewer
 import gymnasium as gym
 from gymnasium import spaces
 from scipy.spatial.transform import Rotation
+from stable_baselines3.common.env_checker import check_env
 
 import time
 from pathlib import Path
@@ -34,7 +35,9 @@ class RobotEnv(gym.Env):
         self.wheelMaxSpeed = robotMaxSpeed / self.robotWheelRadius #[rad/s]
 
         self.action_space = spaces.Box(-1, 1, shape=(2,), dtype=np.float32)
-        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float32)
+        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(6,), dtype=np.float32)
+
+        self.previous_dist = 0.0
 
         self.viewer = mujoco.viewer.launch_passive(
             model = self.model,
@@ -59,7 +62,13 @@ class RobotEnv(gym.Env):
         return observation
 
     def _get_rew(self):
-        pass
+        sigma_dist = 2.0
+        dist = np.linalg.norm(self.posObjectif - self.posRobot)
+        reward_dist = np.exp(-(dist**2)/(sigma_dist**2))
+        # static_penalty = -0.1 if self.previous_dist-dist < 0.0001 else 0
+
+        self.previous_dist = dist
+        return reward_dist
 
     def _terminated(self, posSeuil=0.1, angleSeuil=10):
         '''posSeuil [m], angleSeuil [deg]'''
@@ -98,7 +107,9 @@ class RobotEnv(gym.Env):
         
         mujoco.mj_forward(self.model, self.data)
         self.n_steps = 0
-        return self._get_obs
+
+        obs = self._get_obs(np.array([0.0, 0.0]))
+        return (obs, {})
 
     def step(self, action):
         self.n_steps+=1
@@ -107,24 +118,24 @@ class RobotEnv(gym.Env):
         for _ in range(self.frame_skip):
             mujoco.mj_step(self.model, self.data)
         mujoco.mj_forward(self.model, self.data)
-        observation = self._get_obs(action)
+        obs = self._get_obs(action)
         reward = self._get_rew()
         terminated = self._terminated()
-        print(terminated)
+        truncated = True if self.n_steps >= self.max_steps else False
+        return obs, reward, terminated, truncated, {}
 
 RLenv = RobotEnv(str(Path(__file__).resolve().parent / "models/scene.xml"))
+check_env(RLenv, warn=True)
 
 t0 = time.monotonic()
 try:
-    # RLenv.reset()
+    RLenv.reset()
     while(1):
         t1 = time.monotonic()
         if(t1-t0>= (RLenv.sceneTimeStep * RLenv.frame_skip)):
             t0 = t1
-            RLenv.step(np.array([0.0, 0.0]))
+            RLenv.step(np.array([0.1, 0.1]))
             if RLenv.n_steps % 1 == 0:
                 RLenv.viewer.sync()
-            if RLenv.n_steps % 500 == 0:
-                RLenv.reset()
 except KeyboardInterrupt:
     RLenv.viewer.close()
