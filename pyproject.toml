@@ -16,8 +16,19 @@ dependencies = [
     "pyqt6>=6.11.0",
     "scipy>=1.18.1",
     "stable-baselines3>=2.9.0",
+    "tensorboard>=2.21.0",
+    "tensorflow[and-cuda]>=2.21.0",
     "tk>=0.1.0",
+    "torch>=2.14.1",
 ]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
 
 [project.scripts]
 vision-deporte = "vision_deporte:main"

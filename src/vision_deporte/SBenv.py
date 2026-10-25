@@ -5,6 +5,9 @@ import gymnasium as gym
 from gymnasium import spaces
 from scipy.spatial.transform import Rotation
 from stable_baselines3.common.env_checker import check_env
+from stable_baselines3 import PPO
+from stable_baselines3.common.vec_env import SubprocVecEnv, VecNormalize, DummyVecEnv
+from stable_baselines3.common.env_util import make_vec_env
 
 import time
 from pathlib import Path
@@ -12,7 +15,7 @@ from pathlib import Path
 class RobotEnv(gym.Env):
     metadata = {"render_modes": ["human"]}
 
-    def __init__(self, xml_path, frame_skip=10, max_steps=500):
+    def __init__(self, xml_path, frame_skip=10, max_steps=500, viewer=False):
         super().__init__()
         self.model = mujoco.MjModel.from_xml_path(xml_path)
         self.data = mujoco.MjData(self.model)
@@ -25,6 +28,7 @@ class RobotEnv(gym.Env):
         self.R_world_robot = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])  
         self.posObjectif = np.array([0.0, 0.0, 0.0])
         self.R_world_obj = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])
+        self.R_robot_obj = Rotation.from_euler("xyz", [0.0, 0.0, np.pi]) #pi to avoid early terminated
 
         self.idRobotModel = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "robot_base_metal")
         idRobotRightWheelCapsule = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, "robot_capsuleWheel")
@@ -37,44 +41,51 @@ class RobotEnv(gym.Env):
         self.action_space = spaces.Box(-1, 1, shape=(2,), dtype=np.float32)
         self.observation_space = spaces.Box(-np.inf, np.inf, shape=(6,), dtype=np.float32)
 
-        self.previous_dist = 0.0
+        self.previousDisObjectif = 0.0
 
-        self.viewer = mujoco.viewer.launch_passive(
-            model = self.model,
-            data = self.data,
-            show_left_ui=False,
-            show_right_ui=False,
-        )
+        if viewer:
+            self.viewer = mujoco.viewer.launch_passive(
+                model = self.model,
+                data = self.data,
+                show_left_ui=False,
+                show_right_ui=False,
+            )
 
     def _get_obs(self, action):
         self.posRobot = self.data.xpos[self.idRobotModel].copy()
         robot_qpos = self.data.xquat[self.idRobotModel].copy()
         self.R_world_robot = Rotation.from_quat(robot_qpos, scalar_first=True)
-        R_robot_obj = self.R_world_robot.inv() * self.R_world_obj
+        self.R_robot_obj = self.R_world_robot.inv() * self.R_world_obj
         posObjRobot = self.R_world_robot.inv().apply(self.posObjectif - self.posRobot)
 
         observation =  np.concatenate([
             posObjRobot[:2],
-            np.array([np.cos(R_robot_obj.as_euler("xyz")[2]), np.sin(R_robot_obj.as_euler("xyz")[2])]),
-            action
+            np.array([np.cos(self.R_robot_obj.as_euler("xyz")[2]), np.sin(self.R_robot_obj.as_euler("xyz")[2])]),
+            np.asarray(action, dtype=np.float32).reshape(-1),
         ]).astype(np.float32)
 
         return observation
 
     def _get_rew(self):
         sigma_dist = 2.0
-        dist = np.linalg.norm(self.posObjectif - self.posRobot)
-        reward_dist = np.exp(-(dist**2)/(sigma_dist**2))
-        # static_penalty = -0.1 if self.previous_dist-dist < 0.0001 else 0
+        sigma_angle_dist = 1.5
+        disObjectif = np.linalg.norm(self.posObjectif - self.posRobot)
+        reward_dist = np.exp(-(disObjectif**2)/(sigma_dist**2))
 
-        self.previous_dist = dist
-        return reward_dist
+        distAngleObjectif = np.linalg.norm(self.R_robot_obj.as_euler("xyz")[2])
+        reward_angle_dist = np.exp(-(distAngleObjectif**2)/(sigma_angle_dist**2))
 
-    def _terminated(self, posSeuil=0.1, angleSeuil=10):
+        reward_terminated = 0
+        if(self._terminated()):
+            reward_terminated = 250
+
+        self.previousDisObjectif = disObjectif
+        return reward_dist + reward_angle_dist + reward_terminated
+
+    def _terminated(self, posSeuil=0.01, angleSeuil=10):
         '''posSeuil [m], angleSeuil [deg]'''
         disObjectif = np.linalg.norm(self.posRobot-self.posObjectif)
-        R_robot_obj = self.R_world_robot.inv() * self.R_world_obj
-        distAngleObjectif = np.linalg.norm(R_robot_obj.as_euler("xyz", degrees=True)[2])
+        distAngleObjectif = np.linalg.norm(self.R_robot_obj.as_euler("xyz", degrees=True)[2])
         if(disObjectif<=posSeuil and distAngleObjectif<=angleSeuil):
             return True
         return False
@@ -124,18 +135,52 @@ class RobotEnv(gym.Env):
         truncated = True if self.n_steps >= self.max_steps else False
         return obs, reward, terminated, truncated, {}
 
-RLenv = RobotEnv(str(Path(__file__).resolve().parent / "models/scene.xml"))
-check_env(RLenv, warn=True)
+train = False
 
-t0 = time.monotonic()
-try:
-    RLenv.reset()
-    while(1):
-        t1 = time.monotonic()
-        if(t1-t0>= (RLenv.sceneTimeStep * RLenv.frame_skip)):
-            t0 = t1
-            RLenv.step(np.array([0.1, 0.1]))
-            if RLenv.n_steps % 1 == 0:
-                RLenv.viewer.sync()
-except KeyboardInterrupt:
-    RLenv.viewer.close()
+if __name__ == "__main__":
+    
+    if train : 
+        SBenv = make_vec_env(
+            lambda : RobotEnv(str(Path(__file__).resolve().parent / "models/scene.xml")),
+            n_envs=8, 
+            vec_env_cls=SubprocVecEnv
+        )
+        SBenv = VecNormalize(SBenv, norm_obs=True, norm_reward=True)
+        model = PPO(
+            "MlpPolicy", 
+            SBenv, 
+            verbose=1, 
+            tensorboard_log=str(Path(__file__).resolve().parent / "tensorboard_log"),
+            device="cpu"
+        )
+        base = Path(__file__).resolve().parent
+        out = base / "trained_agent"
+        out.mkdir(exist_ok=True)
+        model.learn(total_timesteps=500_000)
+        model.save(str(out / "ppo_robot"))
+        SBenv.save(str(out / "vecnormalize.pkl"))
+
+    else:
+        t0 = time.monotonic()
+        try:
+            env = DummyVecEnv([lambda: RobotEnv(str(Path(__file__).resolve().parent / "models/scene.xml"), viewer=True)])
+            env = VecNormalize.load(str(Path(__file__).resolve().parent / "trained_agent/vecnormalize.pkl"), env)
+            env.training = False
+            env.norm_reward = False
+
+            model = PPO.load(str(Path(__file__).resolve().parent / "trained_agent/ppo_robot"))
+            obs = env.reset()
+
+            RLenv = env.venv.envs[0]
+            while(1):
+                t1 = time.monotonic()
+                if(t1-t0>= (RLenv.sceneTimeStep * RLenv.frame_skip)):
+                    t0 = t1
+                    action, _ = model.predict(obs, deterministic=True)
+                    obs, _, done, _=env.step(action)
+                    RLenv.viewer.sync()
+                else:
+                    time.sleep(0.001)
+
+        except KeyboardInterrupt:
+            RLenv.viewer.close()
