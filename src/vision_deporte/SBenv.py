@@ -12,6 +12,7 @@ from stable_baselines3.common.callbacks import BaseCallback
 
 import time
 from pathlib import Path
+import argparse
 
 class RobotEnv(gym.Env):
     metadata = {"render_modes": ["human"]}
@@ -179,11 +180,24 @@ class TensorboardCallback(BaseCallback):
             self.logger.record(k ,v)
         return super()._on_rollout_end()
 
-train = False
+parser = argparse.ArgumentParser(
+    description="Train and visualise robot agent"
+)
+parser.add_argument(
+    "-t",
+    "--train",
+    action="store_true"
+)
+parser.add_argument(
+    "-v",
+    "--viewer",
+    action="store_true"
+)
 
 if __name__ == "__main__":
+    args = parser.parse_args()
     
-    if train : 
+    if args.train : 
         SBenv = make_vec_env(
             lambda : RobotEnv(str(Path(__file__).resolve().parent / "models/scene.xml")),
             n_envs=8, 
@@ -207,7 +221,7 @@ if __name__ == "__main__":
     else:
         t0 = time.monotonic()
         try:
-            env = DummyVecEnv([lambda: RobotEnv(str(Path(__file__).resolve().parent / "models/scene.xml"), viewer=True)])
+            env = DummyVecEnv([lambda: RobotEnv(str(Path(__file__).resolve().parent / "models/scene.xml"), viewer=args.viewer)])
             env = VecNormalize.load(str(Path(__file__).resolve().parent / "trained_agent/vecnormalize.pkl"), env)
             env.training = False
             env.norm_reward = False
