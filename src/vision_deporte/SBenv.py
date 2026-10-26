@@ -8,6 +8,7 @@ from stable_baselines3.common.env_checker import check_env
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import SubprocVecEnv, VecNormalize, DummyVecEnv
 from stable_baselines3.common.env_util import make_vec_env
+from stable_baselines3.common.callbacks import BaseCallback
 
 import time
 from pathlib import Path
@@ -43,6 +44,8 @@ class RobotEnv(gym.Env):
 
         self.previousDisObjectif = 0.0
 
+        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
+
         if viewer:
             self.viewer = mujoco.viewer.launch_passive(
                 model = self.model,
@@ -72,7 +75,7 @@ class RobotEnv(gym.Env):
         disObjectif = np.linalg.norm(self.posObjectif - self.posRobot)
         reward_dist = np.exp(-(disObjectif**2)/(sigma_dist**2))
 
-        distAngleObjectif = np.linalg.norm(self.R_robot_obj.as_euler("xyz")[2])
+        distAngleObjectif = np.linalg.norm(self.R_world_obj.as_euler("xyz")[2])
         reward_angle_dist = np.exp(-(distAngleObjectif**2)/(sigma_angle_dist**2))
 
         reward_terminated = 0
@@ -80,6 +83,10 @@ class RobotEnv(gym.Env):
             reward_terminated = 250
 
         self.previousDisObjectif = disObjectif
+        self.info_reward["r_dist"] += reward_dist
+        self.info_reward["r_angle_dist"] += reward_angle_dist
+        self.info_reward["r_terminated"] += reward_terminated
+
         return reward_dist + reward_angle_dist + reward_terminated
 
     def _terminated(self, posSeuil=0.01, angleSeuil=10):
@@ -120,6 +127,8 @@ class RobotEnv(gym.Env):
         self.n_steps = 0
 
         obs = self._get_obs(np.array([0.0, 0.0]))
+        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
+
         return (obs, {})
 
     def step(self, action):
@@ -133,7 +142,42 @@ class RobotEnv(gym.Env):
         reward = self._get_rew()
         terminated = self._terminated()
         truncated = True if self.n_steps >= self.max_steps else False
-        return obs, reward, terminated, truncated, {}
+        infos = {}
+        if terminated or truncated:
+            infos["ep_rew"] = self.info_reward
+            
+        return obs, reward, terminated, truncated, infos
+
+class TensorboardCallback(BaseCallback):
+    """
+    Custom callback for plotting additional values in tensorboard.
+    """
+
+    def __init__(self, verbose=0):
+        super().__init__(verbose)
+        self.rewards_ep = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
+        self.prev_num_timesteps = 0
+
+    def _on_step(self) -> bool:
+        # Log scalar value (here a random variable)
+        infos = self.locals["infos"]
+        for envs in range(len(infos)):
+            if "ep_rew" in infos[envs]:
+                for key in self.rewards_ep.keys():
+                    self.rewards_ep[key] += infos[envs]["ep_rew"][key]
+        return True
+
+    def _on_rollout_end(self):
+        infos = self.locals["infos"]
+        for key in self.rewards_ep.keys():
+            self.rewards_ep[key] /= (self.model.num_timesteps - self.prev_num_timesteps)/self.training_env.get_attr("max_steps")[0] # division pour la nombre d'episode par rollout
+        print(f"self.rewards_ep : {self.rewards_ep}")
+        print((self.model.num_timesteps - self.prev_num_timesteps), self.training_env.get_attr("max_steps")[0])
+
+        self.prev_num_timesteps = self.model.num_timesteps
+        for k, v in self.rewards_ep.items():
+            self.logger.record(k ,v)
+        return super()._on_rollout_end()
 
 train = False
 
@@ -148,7 +192,7 @@ if __name__ == "__main__":
         SBenv = VecNormalize(SBenv, norm_obs=True, norm_reward=True)
         model = PPO(
             "MlpPolicy", 
-            SBenv, 
+            SBenv,
             verbose=1, 
             tensorboard_log=str(Path(__file__).resolve().parent / "tensorboard_log"),
             device="cpu"
@@ -156,7 +200,7 @@ if __name__ == "__main__":
         base = Path(__file__).resolve().parent
         out = base / "trained_agent"
         out.mkdir(exist_ok=True)
-        model.learn(total_timesteps=500_000)
+        model.learn(total_timesteps=500_000, callback=TensorboardCallback())
         model.save(str(out / "ppo_robot"))
         SBenv.save(str(out / "vecnormalize.pkl"))
 
