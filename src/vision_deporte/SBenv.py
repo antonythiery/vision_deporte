@@ -91,7 +91,7 @@ class RobotEnv(gym.Env):
 
         return reward_dist + reward_angle_dist + reward_terminated
 
-    def _terminated(self, posSeuil=0.10, angleSeuil=10):
+    def _terminated(self, posSeuil=0.05, angleSeuil=5):
         '''posSeuil [m], angleSeuil [deg]'''
         disObjectif = np.linalg.norm(self.posRobot-self.posObjectif)
         distAngleObjectif = np.linalg.norm(self.R_robot_obj.as_euler("xyz", degrees=True)[2])
@@ -119,7 +119,11 @@ class RobotEnv(gym.Env):
         super().reset(seed=seed)
 
         pos_robot = self._rand_pos_in_table()
-        self.data.qpos = pos_robot
+        self.data.joint("robot_base_metal_freejoint").qpos = pos_robot[:7]
+        self.data.joint("robot_left_wheel").qpos = 0.0
+        self.data.joint("robot_right_wheel").qpos = 0.0
+
+        self.idRobotModel
 
         pos_objectif = self._rand_pos_in_table()
         self.posObjectif = pos_objectif[:3]
@@ -154,7 +158,6 @@ class RobotEnv(gym.Env):
         if args.viewer:
             if terminated or truncated:
                 print(infos["ep_rew"])
-                print(np.linalg.norm(self.posObjectif - self.posRobot), np.linalg.norm(self.R_robot_obj.as_euler("xyz")[2]))          
 
         return obs, reward, terminated, truncated, infos
 
@@ -181,8 +184,6 @@ class TensorboardCallback(BaseCallback):
         infos = self.locals["infos"]
         for key in self.rewards_ep.keys():
             self.rewards_ep[key] /= (self.model.num_timesteps - self.prev_num_timesteps)/self.training_env.get_attr("max_steps")[0] # division pour la nombre d'episode par rollout
-        print(f"self.rewards_ep : {self.rewards_ep}")
-        print((self.model.num_timesteps - self.prev_num_timesteps), self.training_env.get_attr("max_steps")[0])
 
         self.prev_num_timesteps = self.model.num_timesteps
         for k, v in self.rewards_ep.items():
