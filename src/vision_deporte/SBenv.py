@@ -72,16 +72,17 @@ class RobotEnv(gym.Env):
 
     def _get_rew(self):
         sigma_dist = 2.0
-        sigma_angle_dist = 1.5
+        sigma_angle_dist = 1.5# 1.5 pour presque 0 à 360
         disObjectif = np.linalg.norm(self.posObjectif - self.posRobot)
         reward_dist = np.exp(-(disObjectif**2)/(sigma_dist**2))
 
-        distAngleObjectif = np.linalg.norm(self.R_world_obj.as_euler("xyz")[2])
-        reward_angle_dist = np.exp(-(distAngleObjectif**2)/(sigma_angle_dist**2))
+        weight_angle_dist = 0.05
+        distAngleObjectif = np.linalg.norm(self.R_robot_obj.as_euler("xyz")[2])
+        reward_angle_dist = np.exp(-(distAngleObjectif**2)/(sigma_angle_dist**2)) * weight_angle_dist
 
         reward_terminated = 0
         if(self._terminated()):
-            reward_terminated = 250
+            reward_terminated = 400
 
         self.previousDisObjectif = disObjectif
         self.info_reward["r_dist"] += reward_dist
@@ -90,7 +91,7 @@ class RobotEnv(gym.Env):
 
         return reward_dist + reward_angle_dist + reward_terminated
 
-    def _terminated(self, posSeuil=0.01, angleSeuil=10):
+    def _terminated(self, posSeuil=0.10, angleSeuil=10):
         '''posSeuil [m], angleSeuil [deg]'''
         disObjectif = np.linalg.norm(self.posRobot-self.posObjectif)
         distAngleObjectif = np.linalg.norm(self.R_robot_obj.as_euler("xyz", degrees=True)[2])
@@ -130,6 +131,9 @@ class RobotEnv(gym.Env):
         obs = self._get_obs(np.array([0.0, 0.0]))
         self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
 
+        if args.viewer:
+            print(f"pos_objectif : {self.posObjectif}, angle objectif : {self.R_world_obj.as_euler("xyz", degrees=True)[2]}")
+
         return (obs, {})
 
     def step(self, action):
@@ -146,7 +150,12 @@ class RobotEnv(gym.Env):
         infos = {}
         if terminated or truncated:
             infos["ep_rew"] = self.info_reward
-            
+
+        if args.viewer:
+            if terminated or truncated:
+                print(infos["ep_rew"])
+                print(np.linalg.norm(self.posObjectif - self.posRobot), np.linalg.norm(self.R_robot_obj.as_euler("xyz")[2]))          
+
         return obs, reward, terminated, truncated, infos
 
 class TensorboardCallback(BaseCallback):
@@ -214,7 +223,7 @@ if __name__ == "__main__":
         base = Path(__file__).resolve().parent
         out = base / "trained_agent"
         out.mkdir(exist_ok=True)
-        model.learn(total_timesteps=500_000, callback=TensorboardCallback())
+        model.learn(total_timesteps=2_000_000, callback=TensorboardCallback())
         model.save(str(out / "ppo_robot"))
         SBenv.save(str(out / "vecnormalize.pkl"))
 
