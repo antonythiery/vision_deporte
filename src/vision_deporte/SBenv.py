@@ -70,12 +70,17 @@ class RobotEnv(gym.Env):
         self.posCardboardBox = self.data.xpos[self.idCardboardBox].copy()
         box_qpos = self.data.xquat[self.idCardboardBox].copy()
         self.R_world_box = Rotation.from_quat(box_qpos, scalar_first=True)
-        print(f"posCardboardBox : {box_qpos}")
+        self.R_robot_box = self.R_world_robot.inv() * self.R_world_box
+        posBoxRobot = self.R_world_robot.inv().apply(self.posCardboardBox - self.posRobot)
+        boxVertical = 1 if self.R_world_box.as_euler("xyz", degrees=True)[0] >= 45 else 0
 
         observation =  np.concatenate([
-            posObjRobot[:2],
-            np.array([np.cos(self.R_robot_obj.as_euler("xyz")[2]), np.sin(self.R_robot_obj.as_euler("xyz")[2])]),
-            np.asarray(action, dtype=np.float32).reshape(-1),
+            posObjRobot[:2], #2// Position de l'objectif repère Robot
+            np.array([np.cos(self.R_robot_obj.as_euler("xyz")[2]), np.sin(self.R_robot_obj.as_euler("xyz")[2])]), #2// Différence d'orientation objectif repère Robot
+            np.asarray(action, dtype=np.float32).reshape(-1), #2// Actions précédente pour les roues du robot
+            # posBoxRobot[:2], #2// Position de l'obstacle repère Robot
+            # np.array([np.cos(self.R_robot_box.as_euler("xyz")[2]), np.sin(self.R_robot_box.as_euler("xyz")[2])]), #2// Différence d'orientation obstacle repère Robot
+            # boxVertical #1// 1 si la boite est verticale 0 sinon
         ]).astype(np.float32)
 
         return observation
@@ -163,7 +168,19 @@ class RobotEnv(gym.Env):
         pos_objectif = self._rand_pos_in_table()
         self.posObjectif = pos_objectif[:3]
         self.R_world_obj = Rotation.from_quat(pos_objectif[3:7], scalar_first=True)
+
+        pos_box = self._rand_pos_in_table()
+        if self.np_random.random(1)[0] >= 0.5:
+            pos_box[2] = 0.16
+            new_quat = Rotation.from_quat(pos_box[3:7], scalar_first=True) * Rotation.from_euler("xyz", [np.pi/2, 0.0, 0.0])
+            pos_box[3:7] = new_quat.as_quat(scalar_first=True)
+        else:
+            pos_box[2] = 0.055
+            pos_box[3] = 0.0
+        print(f"pos_box : {pos_box}")
+        self.data.joint("cardboard_box_joint").qpos = pos_box[:7]
         
+
         mujoco.mj_forward(self.model, self.data)
         self.n_steps = 0
 

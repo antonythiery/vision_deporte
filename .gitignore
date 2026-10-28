@@ -14,4 +14,5 @@ datas/
 # Personal config
 .vscode/
 src/vision_deporte/tensorboard_log/
+src/vision_deporte/trained_agent_saved/
 
