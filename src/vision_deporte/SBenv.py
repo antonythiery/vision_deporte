@@ -37,6 +37,10 @@ class RobotEnv(gym.Env):
         self.robotWheelRadius = self.model.geom_size[idRobotRightWheelCapsule][0]
         self.robotRadius = 0.20645 #[mm]
 
+        self.idCardboardBox = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "cardboard_box")
+        self.posCardboardBox = np.array([1.0, 0.0, 0.0])
+        self.R_world_box = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])
+
         self.robotMaxSpeed = 1 #[m/s]
         self.wheelMaxSpeed = self.robotMaxSpeed / self.robotWheelRadius #[rad/s]
 
@@ -46,7 +50,7 @@ class RobotEnv(gym.Env):
         self.previousDistObjectif = 1.0 # pas terrible
         self.previousDistAngleObjectif = np.pi/2 # pas terrible
 
-        self.info_reward = {"r_vel" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
+        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
 
         if viewer:
             self.viewer = mujoco.viewer.launch_passive(
@@ -62,6 +66,11 @@ class RobotEnv(gym.Env):
         self.R_world_robot = Rotation.from_quat(robot_qpos, scalar_first=True)
         self.R_robot_obj = self.R_world_robot.inv() * self.R_world_obj
         posObjRobot = self.R_world_robot.inv().apply(self.posObjectif - self.posRobot)
+
+        self.posCardboardBox = self.data.xpos[self.idCardboardBox].copy()
+        box_qpos = self.data.xquat[self.idCardboardBox].copy()
+        self.R_world_box = Rotation.from_quat(box_qpos, scalar_first=True)
+        print(f"posCardboardBox : {box_qpos}")
 
         observation =  np.concatenate([
             posObjRobot[:2],
@@ -84,6 +93,7 @@ class RobotEnv(gym.Env):
         reward_terminated = 0
         if(self._terminated()):
             reward_terminated = 400
+
 
         self.previousDisObjectif = disObjectif
         self.info_reward["r_dist"] += reward_dist
@@ -158,7 +168,7 @@ class RobotEnv(gym.Env):
         self.n_steps = 0
 
         obs = self._get_obs(np.array([0.0, 0.0]))
-        self.info_reward = {"r_vel" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
+        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
 
         if args.viewer:
             print(f"pos_objectif : {self.posObjectif}, angle objectif : {self.R_world_obj.as_euler("xyz", degrees=True)[2]}")
@@ -193,7 +203,7 @@ class TensorboardCallback(BaseCallback):
 
     def __init__(self, verbose=0):
         super().__init__(verbose)
-        self.rewards_ep = {"r_vel" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
+        self.rewards_ep = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
         self.prev_num_timesteps = 0
 
     def _on_step(self) -> bool:
