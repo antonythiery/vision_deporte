@@ -32,7 +32,7 @@
       </body>
 
       <body name="cardboard_boxe" pos="1 0 1" euler="0 0 0">
-        <freejoint name="cardboard_boxe_joint"/>
+        <!-- <freejoint name="cardboard_boxe_joint"/> -->
         <geom name="cardboard_boxe" type="box" size=".16 .055 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
       </body>
 

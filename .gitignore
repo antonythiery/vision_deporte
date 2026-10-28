@@ -13,3 +13,5 @@ datas/
 
 # Personal config
 .vscode/
+src/vision_deporte/tensorboard_log/
+

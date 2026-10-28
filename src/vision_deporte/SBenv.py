@@ -37,15 +37,16 @@ class RobotEnv(gym.Env):
         self.robotWheelRadius = self.model.geom_size[idRobotRightWheelCapsule][0]
         self.robotRadius = 0.20645 #[mm]
 
-        robotMaxSpeed = 1 #[m/s]
-        self.wheelMaxSpeed = robotMaxSpeed / self.robotWheelRadius #[rad/s]
+        self.robotMaxSpeed = 1 #[m/s]
+        self.wheelMaxSpeed = self.robotMaxSpeed / self.robotWheelRadius #[rad/s]
 
         self.action_space = spaces.Box(-1, 1, shape=(2,), dtype=np.float32)
         self.observation_space = spaces.Box(-np.inf, np.inf, shape=(6,), dtype=np.float32)
 
-        self.previousDisObjectif = 0.0
+        self.previousDistObjectif = 1.0 # pas terrible
+        self.previousDistAngleObjectif = np.pi/2 # pas terrible
 
-        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
+        self.info_reward = {"r_vel" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
 
         if viewer:
             self.viewer = mujoco.viewer.launch_passive(
@@ -70,7 +71,7 @@ class RobotEnv(gym.Env):
 
         return observation
 
-    def _get_rew(self):
+    def _get_rew_pos(self):
         sigma_dist = 2.0
         sigma_angle_dist = 1.5# 1.5 pour presque 0 à 360
         disObjectif = np.linalg.norm(self.posObjectif - self.posRobot)
@@ -90,6 +91,30 @@ class RobotEnv(gym.Env):
         self.info_reward["r_terminated"] += reward_terminated
 
         return reward_dist + reward_angle_dist + reward_terminated
+
+    def _get_rew_vel(self):
+        sigma_dist = 0.45
+        weight_vel = 1
+        sigma_angle_dist = 1.5# 1.5 pour presque 0 à 360
+        weight_angle_dist = 1.0
+
+        distObjectif = np.linalg.norm(self.posObjectif - self.posRobot)
+        reward_vel = np.linalg.norm(distObjectif - self.previousDistObjectif)/self.sceneTimeStep / self.robotMaxSpeed * weight_vel
+
+        distAngleObjectif = np.linalg.norm(self.R_robot_obj.as_euler("xyz")[2])
+        reward_angle_dist = np.exp(-(distAngleObjectif**2)/(sigma_angle_dist**2)) * np.exp(-(distObjectif**2)/(sigma_dist**2)) * weight_angle_dist
+
+        reward_terminated = 0
+        if(self._terminated()):
+            reward_terminated = 100
+
+        self.previousDistObjectif = distObjectif
+        self.previousDistAngleObjectif = distObjectif
+        self.info_reward["r_vel"] += reward_vel
+        self.info_reward["r_angle_dist"] += reward_angle_dist
+        self.info_reward["r_terminated"] += reward_terminated
+
+        return reward_vel + reward_angle_dist + reward_terminated
 
     def _terminated(self, posSeuil=0.05, angleSeuil=5):
         '''posSeuil [m], angleSeuil [deg]'''
@@ -133,7 +158,7 @@ class RobotEnv(gym.Env):
         self.n_steps = 0
 
         obs = self._get_obs(np.array([0.0, 0.0]))
-        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
+        self.info_reward = {"r_vel" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
 
         if args.viewer:
             print(f"pos_objectif : {self.posObjectif}, angle objectif : {self.R_world_obj.as_euler("xyz", degrees=True)[2]}")
@@ -148,7 +173,7 @@ class RobotEnv(gym.Env):
             mujoco.mj_step(self.model, self.data)
         mujoco.mj_forward(self.model, self.data)
         obs = self._get_obs(action)
-        reward = self._get_rew()
+        reward = self._get_rew_pos()
         terminated = self._terminated()
         truncated = True if self.n_steps >= self.max_steps else False
         infos = {}
@@ -168,7 +193,7 @@ class TensorboardCallback(BaseCallback):
 
     def __init__(self, verbose=0):
         super().__init__(verbose)
-        self.rewards_ep = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
+        self.rewards_ep = {"r_vel" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
         self.prev_num_timesteps = 0
 
     def _on_step(self) -> bool:
