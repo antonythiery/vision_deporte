@@ -40,6 +40,7 @@ class RobotEnv(gym.Env):
         self.idCardboardBox = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "cardboard_box")
         self.posCardboardBox = np.array([1.0, 0.0, 0.0])
         self.R_world_box = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])
+        self.prevPosCardboardBox = np.array([1.0, 0.0, 0.0])
 
         self.robotMaxSpeed = 1 #[m/s]
         self.wheelMaxSpeed = self.robotMaxSpeed / self.robotWheelRadius #[rad/s]
@@ -50,7 +51,7 @@ class RobotEnv(gym.Env):
         self.previousDistObjectif = 1.0 # pas terrible
         self.previousDistAngleObjectif = np.pi/2 # pas terrible
 
-        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
+        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0, "r_box_moved" : 0.0}
 
         if viewer:
             self.viewer = mujoco.viewer.launch_passive(
@@ -99,37 +100,19 @@ class RobotEnv(gym.Env):
         if(self._terminated()):
             reward_terminated = 400
 
+        reward_boxes_moved = 0
+        if (np.linalg.norm(self.posCardboardBox - self.prevPosCardboardBox) >= 0.001):
+            reward_boxes_moved = -10
 
         self.previousDisObjectif = disObjectif
+        self.prevPosCardboardBox = self.posCardboardBox
         self.info_reward["r_dist"] += reward_dist
         self.info_reward["r_angle_dist"] += reward_angle_dist
         self.info_reward["r_terminated"] += reward_terminated
+        self.info_reward["r_box_moved"] += reward_boxes_moved
 
-        return reward_dist + reward_angle_dist + reward_terminated
+        return reward_dist + reward_angle_dist + reward_terminated + reward_boxes_moved
 
-    def _get_rew_vel(self):
-        sigma_dist = 0.45
-        weight_vel = 1
-        sigma_angle_dist = 1.5# 1.5 pour presque 0 à 360
-        weight_angle_dist = 1.0
-
-        distObjectif = np.linalg.norm(self.posObjectif - self.posRobot)
-        reward_vel = np.linalg.norm(distObjectif - self.previousDistObjectif)/self.sceneTimeStep / self.robotMaxSpeed * weight_vel
-
-        distAngleObjectif = np.linalg.norm(self.R_robot_obj.as_euler("xyz")[2])
-        reward_angle_dist = np.exp(-(distAngleObjectif**2)/(sigma_angle_dist**2)) * np.exp(-(distObjectif**2)/(sigma_dist**2)) * weight_angle_dist
-
-        reward_terminated = 0
-        if(self._terminated()):
-            reward_terminated = 100
-
-        self.previousDistObjectif = distObjectif
-        self.previousDistAngleObjectif = distObjectif
-        self.info_reward["r_vel"] += reward_vel
-        self.info_reward["r_angle_dist"] += reward_angle_dist
-        self.info_reward["r_terminated"] += reward_terminated
-
-        return reward_vel + reward_angle_dist + reward_terminated
 
     def _terminated(self, posSeuil=0.05, angleSeuil=5):
         '''posSeuil [m], angleSeuil [deg]'''
@@ -177,18 +160,18 @@ class RobotEnv(gym.Env):
         else:
             pos_box[2] = 0.055
             pos_box[3] = 0.0
-        print(f"pos_box : {pos_box}")
+        self.prevPosCardboardBox = pos_box[:3]
         self.data.joint("cardboard_box_joint").qpos = pos_box[:7]
         
-
         mujoco.mj_forward(self.model, self.data)
         self.n_steps = 0
 
         obs = self._get_obs(np.array([0.0, 0.0]))
-        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
+        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0, "r_box_moved" : 0.0}
 
         if args.viewer:
-            print(f"pos_objectif : {self.posObjectif}, angle objectif : {self.R_world_obj.as_euler("xyz", degrees=True)[2]}")
+            # print(f"pos_objectif : {self.posObjectif}, angle objectif : {self.R_world_obj.as_euler("xyz", degrees=True)[2]}")
+            pass
 
         return (obs, {})
 
@@ -220,7 +203,7 @@ class TensorboardCallback(BaseCallback):
 
     def __init__(self, verbose=0):
         super().__init__(verbose)
-        self.rewards_ep = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0}
+        self.rewards_ep = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0, "r_box_moved" : 0.0}
         self.prev_num_timesteps = 0
 
     def _on_step(self) -> bool:
