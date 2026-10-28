@@ -37,10 +37,9 @@ class RobotEnv(gym.Env):
         self.robotWheelRadius = self.model.geom_size[idRobotRightWheelCapsule][0]
         self.robotRadius = 0.20645 #[mm]
 
-        self.idCardboardBox = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "cardboard_box")
-        self.posCardboardBox = np.array([1.0, 0.0, 0.0])
-        self.R_world_box = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])
-        self.prevPosCardboardBox = np.array([1.0, 0.0, 0.0])
+        self.allCardBoardBox = []
+        for k in range(9):
+            self.allCardBoardBox.append(CardBoardBox(k, self.model, self.data))
 
         self.robotMaxSpeed = 1 #[m/s]
         self.wheelMaxSpeed = self.robotMaxSpeed / self.robotWheelRadius #[rad/s]
@@ -68,20 +67,22 @@ class RobotEnv(gym.Env):
         self.R_robot_obj = self.R_world_robot.inv() * self.R_world_obj
         posObjRobot = self.R_world_robot.inv().apply(self.posObjectif - self.posRobot)
 
-        self.posCardboardBox = self.data.xpos[self.idCardboardBox].copy()
-        box_qpos = self.data.xquat[self.idCardboardBox].copy()
-        self.R_world_box = Rotation.from_quat(box_qpos, scalar_first=True)
-        self.R_robot_box = self.R_world_robot.inv() * self.R_world_box
-        posBoxRobot = self.R_world_robot.inv().apply(self.posCardboardBox - self.posRobot)
-        boxVertical = 1 if self.R_world_box.as_euler("xyz", degrees=True)[0] >= 45 else 0
-
+        observationCardBoard = np.array([])
+        for CardBoardBox in self.allCardBoardBox:
+            CardBoardBox.update(self.posRobot, self.R_world_robot)
+            observationCardBoard = np.concatenate([
+                observationCardBoard,
+                np.array(CardBoardBox.posBoxRobot[:2]).reshape(-1),
+                np.array([np.cos(CardBoardBox.R_robot_box.as_euler("xyz")[2]), np.sin(CardBoardBox.R_robot_box.as_euler("xyz")[2])]),
+                np.array(CardBoardBox.boxVertical).reshape(-1)
+            ])
+        print(len(observationCardBoard), observationCardBoard)
+        
         observation =  np.concatenate([
             posObjRobot[:2], #2// Position de l'objectif repère Robot
             np.array([np.cos(self.R_robot_obj.as_euler("xyz")[2]), np.sin(self.R_robot_obj.as_euler("xyz")[2])]), #2// Différence d'orientation objectif repère Robot
             np.asarray(action, dtype=np.float32).reshape(-1), #2// Actions précédente pour les roues du robot
-            # posBoxRobot[:2], #2// Position de l'obstacle repère Robot
-            # np.array([np.cos(self.R_robot_box.as_euler("xyz")[2]), np.sin(self.R_robot_box.as_euler("xyz")[2])]), #2// Différence d'orientation obstacle repère Robot
-            # boxVertical #1// 1 si la boite est verticale 0 sinon
+            # observationCardBoard
         ]).astype(np.float32)
 
         return observation
@@ -101,11 +102,11 @@ class RobotEnv(gym.Env):
             reward_terminated = 400
 
         reward_boxes_moved = 0
-        if (np.linalg.norm(self.posCardboardBox - self.prevPosCardboardBox) >= 0.001):
-            reward_boxes_moved = -10
+        for CardBoardBox in self.allCardBoardBox:
+            if (CardBoardBox.mov >= 0.001):
+                reward_boxes_moved = -10
 
         self.previousDisObjectif = disObjectif
-        self.prevPosCardboardBox = self.posCardboardBox
         self.info_reward["r_dist"] += reward_dist
         self.info_reward["r_angle_dist"] += reward_angle_dist
         self.info_reward["r_terminated"] += reward_terminated
@@ -152,16 +153,10 @@ class RobotEnv(gym.Env):
         self.posObjectif = pos_objectif[:3]
         self.R_world_obj = Rotation.from_quat(pos_objectif[3:7], scalar_first=True)
 
-        pos_box = self._rand_pos_in_table()
-        if self.np_random.random(1)[0] >= 0.5:
-            pos_box[2] = 0.16
-            new_quat = Rotation.from_quat(pos_box[3:7], scalar_first=True) * Rotation.from_euler("xyz", [np.pi/2, 0.0, 0.0])
-            pos_box[3:7] = new_quat.as_quat(scalar_first=True)
-        else:
-            pos_box[2] = 0.055
-            pos_box[3] = 0.0
-        self.prevPosCardboardBox = pos_box[:3]
-        self.data.joint("cardboard_box_joint").qpos = pos_box[:7]
+        for CardBoardBox in self.allCardBoardBox:
+            pos_box = self._rand_pos_in_table()
+            vertical = True if self.np_random.random(1)[0] >= 0.5 else False
+            CardBoardBox.reset(pos_box, vertical)
         
         mujoco.mj_forward(self.model, self.data)
         self.n_steps = 0
@@ -192,7 +187,8 @@ class RobotEnv(gym.Env):
 
         if args.viewer:
             if terminated or truncated:
-                print(infos["ep_rew"])
+                # print(infos["ep_rew"])
+                pass
 
         return obs, reward, terminated, truncated, infos
 
@@ -225,6 +221,38 @@ class TensorboardCallback(BaseCallback):
             self.logger.record(k ,v)
         return super()._on_rollout_end()
 
+class CardBoardBox():
+    def __init__(self, num, model, data):
+        self.num = num
+        self.model = model
+        self.data = data
+        self.idCardboardBox = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "cardboard_box"+str(num))
+        self.posCardboardBox = np.array([1.0, 0.0, 0.0])
+        self.R_world_box = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])
+        self.prevPosCardboardBox = np.array([1.0, 0.0, 0.0])
+
+    def update(self, posRobot, R_world_robot):
+        self.posCardboardBox = self.data.xpos[self.idCardboardBox].copy()
+        box_qpos = self.data.xquat[self.idCardboardBox].copy()
+        self.R_world_box = Rotation.from_quat(box_qpos, scalar_first=True)
+        self.R_robot_box = R_world_robot.inv() * self.R_world_box
+        self.posBoxRobot = R_world_robot.inv().apply(self.posCardboardBox - posRobot)
+        self.boxVertical = 1 if self.R_world_box.as_euler("xyz", degrees=True)[0] >= 45 else 0
+        self.mov = np.linalg.norm(self.posCardboardBox - self.prevPosCardboardBox)
+        self.prevPosCardboardBox = self.posCardboardBox
+
+    def reset(self, pos_box, vertical):
+        if vertical:
+            pos_box[2] = 0.16
+            new_quat = Rotation.from_quat(pos_box[3:7], scalar_first=True) * Rotation.from_euler("xyz", [np.pi/2, 0.0, 0.0])
+            pos_box[3:7] = new_quat.as_quat(scalar_first=True)
+        else:
+            pos_box[2] = 0.055
+            pos_box[3:7] = Rotation.from_quat(pos_box[3:7], scalar_first=True).as_quat(scalar_first=True)
+        self.prevPosCardboardBox = pos_box[:3]
+        self.data.joint("cardboard_box_joint" +str(self.num)).qpos = pos_box[:7]
+
+        
 parser = argparse.ArgumentParser(
     description="Train and visualise robot agent"
 )

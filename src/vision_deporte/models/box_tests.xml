@@ -31,9 +31,49 @@
         <geom name="cam" type="box" size=".05 .05 .05" pos="0 0 0" rgba="1 0 0 1" conaffinity="0" contype="0"/>
       </body>
 
-      <body name="cardboard_box" pos="3 0 1" euler="90 0 0">
-        <freejoint name="cardboard_box_joint"/>
-        <geom name="cardboard_box" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
+      <body name="cardboard_box0" pos="3 0 1" euler="90 0 0">
+        <freejoint name="cardboard_box_joint0"/>
+        <geom name="cardboard_box0" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
+      </body>
+
+      <body name="cardboard_box1" pos="3 0 1" euler="90 0 0">
+        <freejoint name="cardboard_box_joint1"/>
+        <geom name="cardboard_box1" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
+      </body>
+
+      <body name="cardboard_box2" pos="3 0 1" euler="90 0 0">
+        <freejoint name="cardboard_box_joint2"/>
+        <geom name="cardboard_box2" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
+      </body>
+
+      <body name="cardboard_box3" pos="3 0 1" euler="90 0 0">
+        <freejoint name="cardboard_box_joint3"/>
+        <geom name="cardboard_box3" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
+      </body>
+
+      <body name="cardboard_box4" pos="3 0 1" euler="90 0 0">
+        <freejoint name="cardboard_box_joint4"/>
+        <geom name="cardboard_box4" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
+      </body>
+
+      <body name="cardboard_box5" pos="3 0 1" euler="90 0 0">
+        <freejoint name="cardboard_box_joint5"/>
+        <geom name="cardboard_box5" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
+      </body>
+
+      <body name="cardboard_box6" pos="3 0 1" euler="90 0 0">
+        <freejoint name="cardboard_box_joint6"/>
+        <geom name="cardboard_box6" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
+      </body>
+
+      <body name="cardboard_box7" pos="3 0 1" euler="90 0 0">
+        <freejoint name="cardboard_box_joint7"/>
+        <geom name="cardboard_box7" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
+      </body>
+
+      <body name="cardboard_box8" pos="3 0 1" euler="90 0 0">
+        <freejoint name="cardboard_box_joint8"/>
+        <geom name="cardboard_box8" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
       </body>
 
     </worldbody>
