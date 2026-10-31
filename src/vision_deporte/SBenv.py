@@ -45,7 +45,7 @@ class RobotEnv(gym.Env):
         self.wheelMaxSpeed = self.robotMaxSpeed / self.robotWheelRadius #[rad/s]
 
         self.action_space = spaces.Box(-1, 1, shape=(2,), dtype=np.float32)
-        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(6,), dtype=np.float32)
+        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(51,), dtype=np.float32)
 
         self.previousDistObjectif = 1.0 # pas terrible
         self.previousDistAngleObjectif = np.pi/2 # pas terrible
@@ -76,13 +76,12 @@ class RobotEnv(gym.Env):
                 np.array([np.cos(CardBoardBox.R_robot_box.as_euler("xyz")[2]), np.sin(CardBoardBox.R_robot_box.as_euler("xyz")[2])]),
                 np.array(CardBoardBox.boxVertical).reshape(-1)
             ])
-        print(len(observationCardBoard), observationCardBoard)
         
         observation =  np.concatenate([
             posObjRobot[:2], #2// Position de l'objectif repère Robot
             np.array([np.cos(self.R_robot_obj.as_euler("xyz")[2]), np.sin(self.R_robot_obj.as_euler("xyz")[2])]), #2// Différence d'orientation objectif repère Robot
             np.asarray(action, dtype=np.float32).reshape(-1), #2// Actions précédente pour les roues du robot
-            # observationCardBoard
+            observationCardBoard
         ]).astype(np.float32)
 
         return observation
@@ -104,7 +103,7 @@ class RobotEnv(gym.Env):
         reward_boxes_moved = 0
         for CardBoardBox in self.allCardBoardBox:
             if (CardBoardBox.mov >= 0.001):
-                reward_boxes_moved = -10
+                reward_boxes_moved = -0.5
 
         self.previousDisObjectif = disObjectif
         self.info_reward["r_dist"] += reward_dist
@@ -153,10 +152,11 @@ class RobotEnv(gym.Env):
         self.posObjectif = pos_objectif[:3]
         self.R_world_obj = Rotation.from_quat(pos_objectif[3:7], scalar_first=True)
 
+        forbidden_poses = np.array([pos_robot[:2], pos_objectif[:2]])
         for CardBoardBox in self.allCardBoardBox:
             pos_box = self._rand_pos_in_table()
             vertical = True if self.np_random.random(1)[0] >= 0.5 else False
-            CardBoardBox.reset(pos_box, vertical)
+            forbidden_poses = CardBoardBox.reset(pos_box, vertical, forbidden_poses)
         
         mujoco.mj_forward(self.model, self.data)
         self.n_steps = 0
@@ -241,7 +241,10 @@ class CardBoardBox():
         self.mov = np.linalg.norm(self.posCardboardBox - self.prevPosCardboardBox)
         self.prevPosCardboardBox = self.posCardboardBox
 
-    def reset(self, pos_box, vertical):
+    def reset(self, pos_box : np.array, vertical : bool, forbidden_poses: np.array):
+        for forbidden_pos in forbidden_poses:
+            if np.linalg.norm(forbidden_pos - pos_box[:2]) <= 0.32:
+                pos_box[:2] = [self.idCardboardBox + 5.0, 0.0]
         if vertical:
             pos_box[2] = 0.16
             new_quat = Rotation.from_quat(pos_box[3:7], scalar_first=True) * Rotation.from_euler("xyz", [np.pi/2, 0.0, 0.0])
@@ -251,6 +254,8 @@ class CardBoardBox():
             pos_box[3:7] = Rotation.from_quat(pos_box[3:7], scalar_first=True).as_quat(scalar_first=True)
         self.prevPosCardboardBox = pos_box[:3]
         self.data.joint("cardboard_box_joint" +str(self.num)).qpos = pos_box[:7]
+        forbidden_poses = np.concatenate([forbidden_poses, np.array([pos_box[:2]])])
+        return forbidden_poses
 
         
 parser = argparse.ArgumentParser(
