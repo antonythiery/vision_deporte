@@ -35,7 +35,7 @@ class RobotEnv(gym.Env):
         self.idRobotModel = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "robot_base_metal")
         idRobotRightWheelCapsule = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, "robot_capsuleWheel")
         self.robotWheelRadius = self.model.geom_size[idRobotRightWheelCapsule][0]
-        self.robotRadius = 0.20645 #[mm]
+        self.robotRadius = 0.20645 #[m]
 
         self.allCardBoardBox = []
         for k in range(9):
@@ -50,7 +50,7 @@ class RobotEnv(gym.Env):
         self.previousDistObjectif = 1.0 # pas terrible
         self.previousDistAngleObjectif = np.pi/2 # pas terrible
 
-        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0, "r_box_moved" : 0.0}
+        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0, "r_boxes_dist" : 0.0}
 
         if viewer:
             self.viewer = mujoco.viewer.launch_passive(
@@ -86,9 +86,10 @@ class RobotEnv(gym.Env):
 
         return observation
 
-    def _get_rew_pos(self):
+    def _get_rew(self):
         sigma_dist = 2.0
         sigma_angle_dist = 1.5# 1.5 pour presque 0 à 360
+        sigma_boxes_dist = 0.2
         disObjectif = np.linalg.norm(self.posObjectif - self.posRobot)
         reward_dist = np.exp(-(disObjectif**2)/(sigma_dist**2))
 
@@ -101,17 +102,20 @@ class RobotEnv(gym.Env):
             reward_terminated = 400
 
         reward_boxes_moved = 0
+        reward_boxes_dist = 0
         for CardBoardBox in self.allCardBoardBox:
             if (CardBoardBox.mov >= 0.001):
                 reward_boxes_moved = -0.5
+            if(CardBoardBox.distCardboardboxRobot <= 2*self.robotRadius):
+                reward_boxes_dist -= np.exp(-CardBoardBox.distCardboardboxRobot**2/sigma_boxes_dist**2)
 
         self.previousDisObjectif = disObjectif
         self.info_reward["r_dist"] += reward_dist
         self.info_reward["r_angle_dist"] += reward_angle_dist
         self.info_reward["r_terminated"] += reward_terminated
-        self.info_reward["r_box_moved"] += reward_boxes_moved
+        self.info_reward["r_boxes_dist"] += reward_boxes_dist
 
-        return reward_dist + reward_angle_dist + reward_terminated + reward_boxes_moved
+        return reward_dist + reward_angle_dist + reward_terminated + reward_boxes_dist
 
 
     def _terminated(self, posSeuil=0.05, angleSeuil=5):
@@ -162,7 +166,7 @@ class RobotEnv(gym.Env):
         self.n_steps = 0
 
         obs = self._get_obs(np.array([0.0, 0.0]))
-        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0, "r_box_moved" : 0.0}
+        self.info_reward = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0, "r_boxes_dist" : 0.0}
 
         if args.viewer:
             # print(f"pos_objectif : {self.posObjectif}, angle objectif : {self.R_world_obj.as_euler("xyz", degrees=True)[2]}")
@@ -178,7 +182,7 @@ class RobotEnv(gym.Env):
             mujoco.mj_step(self.model, self.data)
         mujoco.mj_forward(self.model, self.data)
         obs = self._get_obs(action)
-        reward = self._get_rew_pos()
+        reward = self._get_rew()
         terminated = self._terminated()
         truncated = True if self.n_steps >= self.max_steps else False
         infos = {}
@@ -196,29 +200,29 @@ class TensorboardCallback(BaseCallback):
     """
     Custom callback for plotting additional values in tensorboard.
     """
+    KEYS = ["r_dist", "r_angle_dist", "r_terminated", "r_boxes_dist"]
 
     def __init__(self, verbose=0):
         super().__init__(verbose)
-        self.rewards_ep = {"r_dist" : 0.0, "r_angle_dist": 0.0, "r_terminated": 0.0, "r_box_moved" : 0.0}
         self.prev_num_timesteps = 0
+        self.buf = {k : [] for k in self.KEYS}
 
     def _on_step(self) -> bool:
-        # Log scalar value (here a random variable)
+        # Log scalar value (here a random variable) 
         infos = self.locals["infos"]
         for envs in range(len(infos)):
             if "ep_rew" in infos[envs]:
-                for key in self.rewards_ep.keys():
-                    self.rewards_ep[key] += infos[envs]["ep_rew"][key]
+                for key in self.KEYS:
+                    self.buf[key].append(infos[envs]["ep_rew"][key])
         return True
 
     def _on_rollout_end(self):
-        infos = self.locals["infos"]
-        for key in self.rewards_ep.keys():
-            self.rewards_ep[key] /= (self.model.num_timesteps - self.prev_num_timesteps)/self.training_env.get_attr("max_steps")[0] # division pour la nombre d'episode par rollout
-
-        self.prev_num_timesteps = self.model.num_timesteps
-        for k, v in self.rewards_ep.items():
-            self.logger.record(k ,v)
+        n = len(self.buf["r_terminated"])
+        if n:
+            for key in self.KEYS:
+                self.logger.record(f"ep_reward_terms/{key}", float(np.mean(self.buf[key])))
+        for v in self.buf.values():
+            v.clear()
         return super()._on_rollout_end()
 
 class CardBoardBox():
@@ -230,6 +234,7 @@ class CardBoardBox():
         self.posCardboardBox = np.array([1.0, 0.0, 0.0])
         self.R_world_box = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])
         self.prevPosCardboardBox = np.array([1.0, 0.0, 0.0])
+        self.distCardboardboxRobot = 0.0
 
     def update(self, posRobot, R_world_robot):
         self.posCardboardBox = self.data.xpos[self.idCardboardBox].copy()
@@ -240,6 +245,7 @@ class CardBoardBox():
         self.boxVertical = 1 if self.R_world_box.as_euler("xyz", degrees=True)[0] >= 45 else 0
         self.mov = np.linalg.norm(self.posCardboardBox - self.prevPosCardboardBox)
         self.prevPosCardboardBox = self.posCardboardBox
+        self.distCardboardboxRobot = np.linalg.norm(self.posBoxRobot)
 
     def reset(self, pos_box : np.array, vertical : bool, forbidden_poses: np.array):
         for forbidden_pos in forbidden_poses:
@@ -292,7 +298,7 @@ if __name__ == "__main__":
         base = Path(__file__).resolve().parent
         out = base / "trained_agent"
         out.mkdir(exist_ok=True)
-        model.learn(total_timesteps=2_000_000, callback=TensorboardCallback())
+        model.learn(total_timesteps=500_000, callback=TensorboardCallback())
         model.save(str(out / "ppo_robot"))
         SBenv.save(str(out / "vecnormalize.pkl"))
 
@@ -314,9 +320,11 @@ if __name__ == "__main__":
                     t0 = t1
                     action, _ = model.predict(obs, deterministic=True)
                     obs, _, done, _=env.step(action)
-                    RLenv.viewer.sync()
+                    if args.viewer:
+                        RLenv.viewer.sync()
                 else:
                     time.sleep(0.001)
 
         except KeyboardInterrupt:
-            RLenv.viewer.close()
+            if args.viewer:
+                RLenv.viewer.close()
