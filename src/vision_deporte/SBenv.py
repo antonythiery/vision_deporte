@@ -115,7 +115,7 @@ class RobotEnv(gym.Env):
         self.info_reward["r_terminated"] += reward_terminated
         self.info_reward["r_boxes_dist"] += reward_boxes_dist
 
-        return reward_dist + reward_angle_dist + reward_terminated + reward_boxes_dist
+        return reward_dist + reward_angle_dist + reward_terminated
 
 
     def _terminated(self, posSeuil=0.05, angleSeuil=5):
@@ -298,7 +298,7 @@ if __name__ == "__main__":
         base = Path(__file__).resolve().parent
         out = base / "trained_agent"
         out.mkdir(exist_ok=True)
-        model.learn(total_timesteps=500_000, callback=TensorboardCallback())
+        model.learn(total_timesteps=3_000_000, callback=TensorboardCallback())
         model.save(str(out / "ppo_robot"))
         SBenv.save(str(out / "vecnormalize.pkl"))
 
