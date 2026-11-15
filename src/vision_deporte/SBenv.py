@@ -47,7 +47,7 @@ class RobotEnv(gym.Env):
         self.wheelMaxSpeed = self.robotMaxSpeed / self.robotWheelRadius #[rad/s]
 
         self.action_space = spaces.Box(-1, 1, shape=(2,), dtype=np.float32)
-        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(6,), dtype=np.float32)
+        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(11,), dtype=np.float32)
 
         self.previousDistObjectif = 1.0 # pas terrible
         self.previousDistAngleObjectif = np.pi/2 # pas terrible
@@ -70,20 +70,26 @@ class RobotEnv(gym.Env):
         posObjRobot = self.R_world_robot.inv().apply(self.posObjectif - self.posRobot)
 
         observationCardBoard = np.array([])
+        minDistCardboardboxRobot = np.inf
+        closestCardBoardBox = self.allCardBoardBox[0] 
         for CardBoardBox in self.allCardBoardBox:
             CardBoardBox.update(self.posRobot, self.R_world_robot)
-            observationCardBoard = np.concatenate([
-                observationCardBoard,
-                np.array(CardBoardBox.posBoxRobot[:2]).reshape(-1),
-                np.array([np.cos(CardBoardBox.R_robot_box.as_euler("xyz")[2]), np.sin(CardBoardBox.R_robot_box.as_euler("xyz")[2])]),
-                np.array(CardBoardBox.boxVertical).reshape(-1)
-            ])
+            if CardBoardBox.distCardboardboxRobot <= minDistCardboardboxRobot:
+                minDistCardboardboxRobot = CardBoardBox.distCardboardboxRobot
+                closestCardBoardBox = CardBoardBox 
+        
+        observationCardBoard = np.concatenate([
+            observationCardBoard,
+            np.array(closestCardBoardBox.posBoxRobot[:2]).reshape(-1),
+            np.array([np.cos(closestCardBoardBox.R_robot_box.as_euler("xyz")[2]), np.sin(closestCardBoardBox.R_robot_box.as_euler("xyz")[2])]),
+            np.array(closestCardBoardBox.boxVertical).reshape(-1)
+        ])
         
         observation =  np.concatenate([
             posObjRobot[:2], #2// Position de l'objectif repère Robot
             np.array([np.cos(self.R_robot_obj.as_euler("xyz")[2]), np.sin(self.R_robot_obj.as_euler("xyz")[2])]), #2// Différence d'orientation objectif repère Robot
             np.asarray(action, dtype=np.float32).reshape(-1), #2// Actions précédente pour les roues du robot
-            # observationCardBoard
+            observationCardBoard
         ]).astype(np.float32)
 
         return observation
