@@ -37,6 +37,8 @@ class RobotEnv(gym.Env):
         self.robotWheelRadius = self.model.geom_size[idRobotRightWheelCapsule][0]
         self.robotRadius = 0.20645 #[m]
 
+        self.idObjectif = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "objectif")
+
         self.allCardBoardBox = []
         for k in range(9):
             self.allCardBoardBox.append(CardBoardBox(k, self.model, self.data))
@@ -45,7 +47,7 @@ class RobotEnv(gym.Env):
         self.wheelMaxSpeed = self.robotMaxSpeed / self.robotWheelRadius #[rad/s]
 
         self.action_space = spaces.Box(-1, 1, shape=(2,), dtype=np.float32)
-        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(51,), dtype=np.float32)
+        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(6,), dtype=np.float32)
 
         self.previousDistObjectif = 1.0 # pas terrible
         self.previousDistAngleObjectif = np.pi/2 # pas terrible
@@ -81,7 +83,7 @@ class RobotEnv(gym.Env):
             posObjRobot[:2], #2// Position de l'objectif repère Robot
             np.array([np.cos(self.R_robot_obj.as_euler("xyz")[2]), np.sin(self.R_robot_obj.as_euler("xyz")[2])]), #2// Différence d'orientation objectif repère Robot
             np.asarray(action, dtype=np.float32).reshape(-1), #2// Actions précédente pour les roues du robot
-            observationCardBoard
+            # observationCardBoard
         ]).astype(np.float32)
 
         return observation
@@ -155,6 +157,8 @@ class RobotEnv(gym.Env):
         pos_objectif = self._rand_pos_in_table()
         self.posObjectif = pos_objectif[:3]
         self.R_world_obj = Rotation.from_quat(pos_objectif[3:7], scalar_first=True)
+        self.model.body_pos[self.idObjectif] = pos_objectif[:3]
+        self.model.body_quat[self.idObjectif] = pos_objectif[3:7]     
 
         forbidden_poses = np.array([pos_robot[:2], pos_objectif[:2]])
         for CardBoardBox in self.allCardBoardBox:
@@ -226,28 +230,30 @@ class TensorboardCallback(BaseCallback):
         return super()._on_rollout_end()
 
 class CardBoardBox():
+    posCardboardBox = np.array([1.0, 0.0, 0.0])
+    R_world_box = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])
+    prevPosCardboardBox = np.array([1.0, 0.0, 0.0])
+    distCardboardboxRobot = 0.0
+    boxVertical = False
+
     def __init__(self, num, model, data):
         self.num = num
         self.model = model
         self.data = data
         self.idCardboardBox = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "cardboard_box"+str(num))
-        self.posCardboardBox = np.array([1.0, 0.0, 0.0])
-        self.R_world_box = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])
-        self.prevPosCardboardBox = np.array([1.0, 0.0, 0.0])
-        self.distCardboardboxRobot = 0.0
-
+        
     def update(self, posRobot, R_world_robot):
         self.posCardboardBox = self.data.xpos[self.idCardboardBox].copy()
         box_qpos = self.data.xquat[self.idCardboardBox].copy()
         self.R_world_box = Rotation.from_quat(box_qpos, scalar_first=True)
         self.R_robot_box = R_world_robot.inv() * self.R_world_box
         self.posBoxRobot = R_world_robot.inv().apply(self.posCardboardBox - posRobot)
-        self.boxVertical = 1 if self.R_world_box.as_euler("xyz", degrees=True)[0] >= 45 else 0
         self.mov = np.linalg.norm(self.posCardboardBox - self.prevPosCardboardBox)
         self.prevPosCardboardBox = self.posCardboardBox
         self.distCardboardboxRobot = np.linalg.norm(self.posBoxRobot)
 
     def reset(self, pos_box : np.array, vertical : bool, forbidden_poses: np.array):
+        self.boxVertical = vertical
         for forbidden_pos in forbidden_poses:
             if np.linalg.norm(forbidden_pos - pos_box[:2]) <= 0.32:
                 pos_box[:2] = [self.idCardboardBox + 5.0, 0.0]
@@ -298,7 +304,7 @@ if __name__ == "__main__":
         base = Path(__file__).resolve().parent
         out = base / "trained_agent"
         out.mkdir(exist_ok=True)
-        model.learn(total_timesteps=3_000_000, callback=TensorboardCallback())
+        model.learn(total_timesteps=2_000_000, callback=TensorboardCallback())
         model.save(str(out / "ppo_robot"))
         SBenv.save(str(out / "vecnormalize.pkl"))
 

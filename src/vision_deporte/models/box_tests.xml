@@ -31,6 +31,11 @@
         <geom name="cam" type="box" size=".05 .05 .05" pos="0 0 0" rgba="1 0 0 1" conaffinity="0" contype="0"/>
       </body>
 
+      <body name="objectif" pos="0 0 0" euler="0 0 0">
+        <!-- <freejoint name="arucoTable3_joint"/> -->
+        <geom name="objectif" type="box" size=".05 .05 .05" pos="0 0 0" rgba="1 0 0 1" conaffinity="0" contype="0"/>
+      </body>
+
       <body name="cardboard_box0" pos="3 0 1" euler="90 0 0">
         <freejoint name="cardboard_box_joint0"/>
         <geom name="cardboard_box0" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
