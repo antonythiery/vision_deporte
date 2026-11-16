@@ -27,10 +27,10 @@ class RobotEnv(gym.Env):
         self.sceneTimeStep = self.model.opt.timestep
 
         self.posRobot = np.array([1.0, 0.0, 0.0])
-        self.R_world_robot = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])  
+        self.R_world_robot = np.zeros([3,3])  
         self.posObjectif = np.array([0.0, 0.0, 0.0])
-        self.R_world_obj = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])
-        self.R_robot_obj = Rotation.from_euler("xyz", [0.0, 0.0, np.pi]) #pi to avoid early terminated
+        self.R_world_obj = np.zeros([3,3])
+        self.R_robot_obj = np.zeros([3,3]) #pi to avoid early terminated
 
         self.idRobotModel = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "robot_base_metal")
         idRobotRightWheelCapsule = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, "robot_capsuleWheel")
@@ -64,10 +64,10 @@ class RobotEnv(gym.Env):
 
     def _get_obs(self, action):
         self.posRobot = self.data.xpos[self.idRobotModel].copy()
-        robot_qpos = self.data.xquat[self.idRobotModel].copy()
-        self.R_world_robot = Rotation.from_quat(robot_qpos, scalar_first=True)
-        self.R_robot_obj = self.R_world_robot.inv() * self.R_world_obj
-        posObjRobot = self.R_world_robot.inv().apply(self.posObjectif - self.posRobot)
+        self.R_world_robot = self.data.xmat[self.idRobotModel].reshape(3,3)
+        self.R_robot_obj = self.R_world_robot.T @ self.R_world_obj
+        posObjRobot = (self.posObjectif - self.posRobot) @ self.R_world_robot
+        self.yaw_error = np.arctan2(self.R_robot_obj[1,0], self.R_robot_obj[0,0])
 
         observationCardBoard = np.array([])
         minDistCardboardboxRobot = np.inf
@@ -81,13 +81,13 @@ class RobotEnv(gym.Env):
         observationCardBoard = np.concatenate([
             observationCardBoard,
             np.array(closestCardBoardBox.posBoxRobot[:2]).reshape(-1),
-            np.array([np.cos(closestCardBoardBox.R_robot_box.as_euler("xyz")[2]), np.sin(closestCardBoardBox.R_robot_box.as_euler("xyz")[2])]),
+            np.array([np.cos(closestCardBoardBox.yaw_error), np.sin(closestCardBoardBox.yaw_error)]),
             np.array(closestCardBoardBox.boxVertical).reshape(-1)
         ])
         
         observation =  np.concatenate([
             posObjRobot[:2], #2// Position de l'objectif repère Robot
-            np.array([np.cos(self.R_robot_obj.as_euler("xyz")[2]), np.sin(self.R_robot_obj.as_euler("xyz")[2])]), #2// Différence d'orientation objectif repère Robot
+            np.array([np.cos(self.yaw_error), np.sin(self.yaw_error)]), #2// Différence d'orientation objectif repère Robot
             np.asarray(action, dtype=np.float32).reshape(-1), #2// Actions précédente pour les roues du robot
             observationCardBoard
         ]).astype(np.float32)
@@ -102,7 +102,7 @@ class RobotEnv(gym.Env):
         reward_dist = np.exp(-(disObjectif**2)/(sigma_dist**2))
 
         weight_angle_dist = 0.05
-        distAngleObjectif = np.linalg.norm(self.R_robot_obj.as_euler("xyz")[2])
+        distAngleObjectif = np.linalg.norm(self.yaw_error)
         reward_angle_dist = np.exp(-(distAngleObjectif**2)/(sigma_angle_dist**2)) * weight_angle_dist
 
         reward_terminated = 0
@@ -129,7 +129,7 @@ class RobotEnv(gym.Env):
     def _terminated(self, posSeuil=0.05, angleSeuil=5):
         '''posSeuil [m], angleSeuil [deg]'''
         disObjectif = np.linalg.norm(self.posRobot-self.posObjectif)
-        distAngleObjectif = np.linalg.norm(self.R_robot_obj.as_euler("xyz", degrees=True)[2])
+        distAngleObjectif = np.linalg.norm(self.yaw_error)
         if(disObjectif<=posSeuil and distAngleObjectif<=angleSeuil):
             return True
         return False
@@ -162,7 +162,7 @@ class RobotEnv(gym.Env):
 
         pos_objectif = self._rand_pos_in_table()
         self.posObjectif = pos_objectif[:3]
-        self.R_world_obj = Rotation.from_quat(pos_objectif[3:7], scalar_first=True)
+        self.R_world_obj = Rotation.from_quat(pos_objectif[3:7], scalar_first=True).as_matrix()
         self.model.body_pos[self.idObjectif] = pos_objectif[:3]
         self.model.body_quat[self.idObjectif] = pos_objectif[3:7]     
 
@@ -251,7 +251,7 @@ class TimingCallback(BaseCallback):
 
 class CardBoardBox():
     posCardboardBox = np.array([1.0, 0.0, 0.0])
-    R_world_box = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])
+    R_world_box = np.zeros([3,3])
     prevPosCardboardBox = np.array([1.0, 0.0, 0.0])
     distCardboardboxRobot = 0.0
     boxVertical = False
@@ -264,13 +264,13 @@ class CardBoardBox():
         
     def update(self, posRobot, R_world_robot):
         self.posCardboardBox = self.data.xpos[self.idCardboardBox].copy()
-        box_qpos = self.data.xquat[self.idCardboardBox].copy()
-        self.R_world_box = Rotation.from_quat(box_qpos, scalar_first=True)
-        self.R_robot_box = R_world_robot.inv() * self.R_world_box
-        self.posBoxRobot = R_world_robot.inv().apply(self.posCardboardBox - posRobot)
+        self.R_world_box = self.data.xmat[self.idCardboardBox].reshape(3,3)
+        self.R_robot_box = R_world_robot.T @ self.R_world_box
+        self.posBoxRobot = (self.posCardboardBox - posRobot) @ R_world_robot
         self.mov = np.linalg.norm(self.posCardboardBox - self.prevPosCardboardBox)
         self.prevPosCardboardBox = self.posCardboardBox
         self.distCardboardboxRobot = np.linalg.norm(self.posBoxRobot)
+        self.yaw_error = np.arctan2(self.R_robot_box[1,0], self.R_robot_box[0,0]) 
 
     def reset(self, pos_box : np.array, vertical : bool, forbidden_poses: np.array):
         self.boxVertical = vertical
