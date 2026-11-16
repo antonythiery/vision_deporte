@@ -40,7 +40,7 @@
         <freejoint name="cardboard_box_joint0"/>
         <geom name="cardboard_box0" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
       </body>
-
+<!-- 
       <body name="cardboard_box1" pos="3 0 1" euler="90 0 0">
         <freejoint name="cardboard_box_joint1"/>
         <geom name="cardboard_box1" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
@@ -79,7 +79,7 @@
       <body name="cardboard_box8" pos="3 0 1" euler="90 0 0">
         <freejoint name="cardboard_box_joint8"/>
         <geom name="cardboard_box8" type="box" size=".055 .16 .055" mass="0.090" pos="0 0 0" rgba="1 0.5 0.1 1" conaffinity="6" contype="6"/>
-      </body>
+      </body> -->
 
     </worldbody>
   </mujoco>

@@ -40,7 +40,7 @@ class RobotEnv(gym.Env):
         self.idObjectif = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "objectif")
 
         self.allCardBoardBox = []
-        for k in range(9):
+        for k in range(1):
             self.allCardBoardBox.append(CardBoardBox(k, self.model, self.data))
 
         self.robotMaxSpeed = 1 #[m/s]
@@ -235,6 +235,20 @@ class TensorboardCallback(BaseCallback):
             v.clear()
         return super()._on_rollout_end()
 
+class TimingCallback(BaseCallback):
+    def _on_step(self):
+        return True
+
+    def _on_rollout_start(self):
+        now = time.perf_counter()
+        if hasattr(self, "t_end"):
+            self.logger.record("timing/train_s", now - self.t_end)
+        self.t_start = now
+
+    def on_rollout_end(self):
+        self.t_end = time.perf_counter()
+        self.logger.record("timing/collect_s", self.t_end - self.t_start)
+
 class CardBoardBox():
     posCardboardBox = np.array([1.0, 0.0, 0.0])
     R_world_box = Rotation.from_euler("xyz", [0.0, 0.0, 0.0])
@@ -296,7 +310,7 @@ if __name__ == "__main__":
     if args.train : 
         SBenv = make_vec_env(
             lambda : RobotEnv(str(Path(__file__).resolve().parent / "models/scene.xml")),
-            n_envs=8, 
+            n_envs=1, 
             vec_env_cls=SubprocVecEnv
         )
         SBenv = VecNormalize(SBenv, norm_obs=True, norm_reward=True)
@@ -310,7 +324,7 @@ if __name__ == "__main__":
         base = Path(__file__).resolve().parent
         out = base / "trained_agent"
         out.mkdir(exist_ok=True)
-        model.learn(total_timesteps=2_000_000, callback=TensorboardCallback())
+        model.learn(total_timesteps=10_000, callback=[TensorboardCallback(), TimingCallback()])
         model.save(str(out / "ppo_robot"))
         SBenv.save(str(out / "vecnormalize.pkl"))
 
