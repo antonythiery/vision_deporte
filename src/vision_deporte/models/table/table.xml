@@ -831,7 +831,7 @@
     </body>
   </worldbody>
   <asset>
-    <texture name="vinyle_tex" type="2d" file="assets/Vinyle_2026.png"/>
+    <texture name="vinyle_tex" type="2d" file="assets/Vinyle_2027.png"/>
     <material name="vinyle_material" texture="vinyle_tex" rgba="1 1 1 1"/>
     <mesh file="part_1__14.stl"/>
     <mesh file="part_1__21.stl"/>

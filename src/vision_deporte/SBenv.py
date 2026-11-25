@@ -30,7 +30,7 @@ class RobotEnv(gym.Env):
         self.R_world_robot = np.zeros([3,3])  
         self.posObjectif = np.array([0.0, 0.0, 0.0])
         self.R_world_obj = np.zeros([3,3])
-        self.R_robot_obj = np.zeros([3,3]) #pi to avoid early terminated
+        self.R_robot_obj = np.zeros([3,3])
 
         self.idRobotModel = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "robot_base_metal")
         idRobotRightWheelCapsule = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, "robot_capsuleWheel")
@@ -77,7 +77,7 @@ class RobotEnv(gym.Env):
             if CardBoardBox.distCardboardboxRobot <= minDistCardboardboxRobot:
                 minDistCardboardboxRobot = CardBoardBox.distCardboardboxRobot
                 closestCardBoardBox = CardBoardBox 
-        
+
         observationCardBoard = np.concatenate([
             observationCardBoard,
             np.array(closestCardBoardBox.posBoxRobot[:2]).reshape(-1),
@@ -324,7 +324,7 @@ if __name__ == "__main__":
         base = Path(__file__).resolve().parent
         out = base / "trained_agent"
         out.mkdir(exist_ok=True)
-        model.learn(total_timesteps=10_000, callback=[TensorboardCallback(), TimingCallback()])
+        model.learn(total_timesteps=2_000_000, callback=[TensorboardCallback(), TimingCallback()])
         model.save(str(out / "ppo_robot"))
         SBenv.save(str(out / "vecnormalize.pkl"))
 
