@@ -5,7 +5,7 @@ import gymnasium as gym
 from gymnasium import spaces
 from scipy.spatial.transform import Rotation
 
-from CardBoardBox import CardBoardBox
+from tools.CardBoardBox import CardBoardBox
 
 class RobotEnv(gym.Env):
     metadata = {"render_modes": ["human"]}

@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 import argparse
 
-from Callbacks import TensorboardCallback, TimingCallback
+from tools.Callbacks import TensorboardCallback, TimingCallback
 from envs import RobotEnv, agentfile
         
 parser = argparse.ArgumentParser(
